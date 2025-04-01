@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template Selector</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom styles */
+        .preview-iframe {
+            border: 1px solid #ccc;
+            background-color: #f9f9f9; /* Light background while loading */
+            min-height: 60vh; /* Ensure it takes significant vertical space */
+            transition: opacity 0.3s ease-in-out;
+        }
+        /* Style for the selected template button */
+        .template-button.active {
+            background-color: #3b82f6; /* Tailwind blue-600 */
+            color: white;
+            border-color: #2563eb; /* Tailwind blue-700 */
+            transform: scale(1.03);
+        }
+        .template-button {
+            transition: all 0.2s ease-in-out;
+        }
+        .template-button:hover:not(.active) {
+             background-color: #eff6ff; /* Tailwind blue-50 */
+             border-color: #93c5fd; /* Tailwind blue-300 */
+        }
+
+        /* Optional: Add a loading indicator (more advanced) */
+        .iframe-container {
+            position: relative;
+        }
+        .loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #555;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+         .iframe-container.loading .loading-overlay {
+             opacity: 1;
+         }
+         .iframe-container.loading .preview-iframe {
+             opacity: 0.5;
+         }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Choose Your Template</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-[250px_1fr] gap-8">
+
+            <!-- Template Selection Sidebar -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Available Templates</h2>
+                <div id="templateList" class="space-y-3">
+                    <!-- Template buttons will be dynamically added or listed here -->
+                     <button data-template="template1.html" class="template-button w-full text-left p-3 border rounded-md hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
+                         <i class="fas fa-palette mr-2 text-blue-500"></i> Template 1
+                     </button>
+                     <button data-template="template2.html" class="template-button w-full text-left p-3 border rounded-md hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
+                         <i class="fas fa-object-group mr-2 text-green-500"></i> Template 2
+                     </button>
+                     <button data-template="template3.html" class="template-button w-full text-left p-3 border rounded-md hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
+                         <i class="fas fa-feather-alt mr-2 text-purple-500"></i> Template 3
+                     </button>
+                     <button data-template="template4.html" class="template-button w-full text-left p-3 border rounded-md hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
+                         <i class="fas fa-layer-group mr-2 text-yellow-500"></i> Template 4
+                     </button>
+                     <button data-template="template5.html" class="template-button w-full text-left p-3 border rounded-md hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50">
+                          <i class="fas fa-cube mr-2 text-red-500"></i> Template 5
+                     </button>
+                </div>
+                <hr class="my-6">
+                 <a id="useTemplateBtn" href="#" target="_blank" class="block w-full text-center bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-200">
+                    Use Selected Template <i class="fas fa-external-link-alt ml-1 text-xs"></i>
+                </a>
+            </div>
+
+            <!-- Live Preview Area -->
+            <div class="bg-white p-2 rounded-lg shadow-md">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700 px-4 pt-4">Live Preview</h2>
+                 <div id="iframeContainer" class="iframe-container">
+                      <div class="loading-overlay">
+                          <i class="fas fa-spinner fa-spin mr-2"></i> Loading Preview...
+                      </div>
+                     <iframe id="previewFrame"
+                             src=""
+                             class="w-full h-full preview-iframe rounded"
+                             title="Template Live Preview"
+                             sandbox="allow-scripts allow-same-origin">
+                         <!-- Sandbox attribute enhances security by limiting iframe capabilities -->
+                     </iframe>
+                 </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const templateList = document.getElementById('templateList');
+        const previewFrame = document.getElementById('previewFrame');
+        const useTemplateBtn = document.getElementById('useTemplateBtn');
+        const iframeContainer = document.getElementById('iframeContainer');
+        const templateButtons = templateList.querySelectorAll('.template-button');
+
+        let currentTemplate = ''; // Variable to store the currently selected template URL
+
+        function loadTemplatePreview(templateUrl) {
+            if (!templateUrl || templateUrl === currentTemplate) {
+                 // console.log("Template already loaded or URL is invalid.");
+                return; // Do nothing if same template or invalid URL
+            }
+
+            // Show loading indicator
+            iframeContainer.classList.add('loading');
+
+            console.log(`Loading preview for: ${templateUrl}`);
+             previewFrame.src = templateUrl;
+            currentTemplate = templateUrl; // Update current template
+
+             // Update the "Use Template" button link
+            useTemplateBtn.href = templateUrl;
+
+            // Update active button style
+            templateButtons.forEach(btn => {
+                if (btn.dataset.template === templateUrl) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+         // Hide loading indicator when iframe finishes loading
+         previewFrame.addEventListener('load', () => {
+             iframeContainer.classList.remove('loading');
+             console.log(`Preview loaded: ${currentTemplate}`);
+         });
+
+         // Handle potential errors loading the iframe content
+         previewFrame.addEventListener('error', (e) => {
+             iframeContainer.classList.remove('loading');
+             console.error(`Error loading iframe source: ${previewFrame.src}`, e);
+             // Optionally display an error message inside the iframe container
+             // previewFrame.contentWindow.document.body.innerHTML = `<div style='padding: 20px; text-align: center; color: red;'>Error loading preview. Please check if the file '${currentTemplate}' exists.</div>`;
+         });
+
+        // Add click listeners to buttons
+        templateButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const templateFile = button.dataset.template;
+                if (templateFile) {
+                    loadTemplatePreview(templateFile);
+                }
+            });
+        });
+
+        // Load the first template by default on page load
+        document.addEventListener('DOMContentLoaded', () => {
+             const firstTemplateButton = templateButtons[0];
+             if (firstTemplateButton) {
+                  const initialTemplate = firstTemplateButton.dataset.template;
+                  loadTemplatePreview(initialTemplate);
+             } else {
+                 console.warn("No template buttons found.");
+                  iframeContainer.classList.remove('loading'); // Hide loading if no templates
+             }
+        });
+    </script>
+
+</body>
+</html>
