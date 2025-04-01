@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxury Real Estate Card Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- html2canvas library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --brand-primary: #0d4f63; /* Dark Teal/Blue */
+            --brand-secondary: #083a4a; /* Darker Teal/Blue */
+            --brand-accent: #c5a47e; /* Muted Gold */
+            --brand-accent-dark: #b8916b; /* Darker Gold */
+            --text-light: #f8fafc; /* Tailwind slate-50 */
+            --text-dark: #1f2937; /* Tailwind gray-800 */
+            --bg-light: #f9fafb; /* Tailwind gray-50 */
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: var(--bg-light);
+            scroll-behavior: smooth;
+            color: var(--text-dark);
+        }
+
+        /* Use Playfair Display for headings */
+        h1, h2, h3, .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+        #cardTitle, #cardSubheading, #cardPrice {
+             font-family: 'Playfair Display', serif;
+        }
+
+        /* Card Styling */
+        .card {
+            transition: transform 0.35s ease-out, box-shadow 0.35s ease-out;
+            border-radius: 1rem; /* Slightly larger radius */
+            overflow: hidden; /* Crucial for mask and content */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+             /* Ensures content stays within rounded corners - might not be needed with overflow:hidden */
+            /* -webkit-mask-image: radial-gradient(white, black); */
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.18);
+        }
+
+        /* Refined Overlay */
+        .overlay {
+            /* Darker, more sophisticated gradient */
+            background: linear-gradient(90deg, rgba(8, 58, 74, 0.0) 0%, rgba(8, 58, 74, 0.65) 45%, rgba(8, 58, 74, 0.85) 75%);
+            backdrop-filter: blur(2px) saturate(110%);
+             /* Smoother fade-in mask */
+            mask-image: linear-gradient(90deg, transparent 8%, black 30%, black 95%);
+            transition: background 0.3s ease; /* Smooth transition if needed later */
+            z-index: 1; /* Ensure overlay is above background but below content */
+        }
+
+         /* Text Shadows for Readability on Card */
+        #cardTitle, #cardSubheading, #cardDescription, #cardPrice, #cardPaymentPlan, #cardContact {
+             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Save Button (Bookmark) */
+        .save-btn {
+            transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1); /* Smoother transition */
+            background-color: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border */
+            position: relative; /* Needed for z-index */
+            z-index: 3; /* Ensure button is above everything */
+        }
+        .save-btn:hover {
+            transform: scale(1.1) rotate(5deg); /* Add slight rotation on hover */
+            background-color: rgba(0, 0, 0, 0.55);
+             border-color: rgba(255, 255, 255, 0.4);
+        }
+        .save-btn.saved {
+            background-color: var(--brand-accent);
+            color: #fff; /* White icon on gold */
+            border: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .save-btn.saved:hover {
+             background-color: var(--brand-accent-dark);
+             transform: scale(1.1); /* Keep scale but remove rotation when saved */
+             rotate: 0deg;
+        }
+
+        /* Form Input Styling */
+        .form-input {
+            border-color: #d1d5db; /* Tailwind gray-300 */
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .form-input:focus {
+            --tw-ring-color: var(--brand-primary); /* Use theme color for focus */
+             border-color: var(--brand-primary);
+             box-shadow: 0 0 0 2px rgba(13, 79, 99, 0.3); /* Updated shadow for var */
+        }
+
+
+         /* Main Action Button */
+        .action-button {
+             background-color: var(--brand-primary);
+             transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .action-button:hover {
+            background-color: var(--brand-secondary);
+             transform: translateY(-1px);
+             box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+         .action-button:active {
+              transform: translateY(0px);
+              box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+         }
+         .action-button:disabled {
+            background-color: #9ca3af; /* Gray-400 */
+             opacity: 0.7;
+             cursor: not-allowed;
+              transform: none;
+              box-shadow: none;
+         }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .overlay {
+                background: linear-gradient(180deg, rgba(8, 58, 74, 0.0) 0%, rgba(8, 58, 74, 0.65) 45%, rgba(8, 58, 74, 0.85) 75%);
+                mask-image: linear-gradient(180deg, transparent 8%, black 30%, black 95%);
+            }
+            .card-content-wrapper {
+                 margin-left: 0;
+                 width: 100%;
+                 text-align: left;
+                 padding-top: 70px; /* Increased padding */
+                 padding-left: 1rem; /* Add some horizontal padding */
+                 padding-right: 1rem;
+             }
+             /* Adjust text sizes slightly on smaller screens if needed */
+             #cardTitle { font-size: 1.875rem; } /* text-3xl */
+             #cardSubheading { font-size: 1.125rem; } /* text-lg */
+        }
+
+         /* Feedback Message Styling */
+        .feedback-message {
+            font-size: 0.875rem;
+            display: inline-block;
+            transition: opacity 0.3s ease;
+            opacity: 1;
+        }
+        .feedback-message.hidden {
+             opacity: 0;
+        }
+        .feedback-success { color: #15803d; font-weight: 500; } /* green-700 */
+        .feedback-error { color: #b91c1c; font-weight: 500; } /* red-700 */
+
+         /* Ensure logo is positioned correctly */
+         #cardLogo {
+             position: relative; /* Needed for z-index */
+             z-index: 3; /* Ensure logo is above overlay */
+         }
+
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen flex items-center justify-center p-4 md:p-8">
+    <div class="max-w-7xl w-full bg-white rounded-xl shadow-xl overflow-hidden border border-gray-200">
+        <!-- Header -->
+        <div class="border-b border-gray-200 p-6 bg-gradient-to-r from-white to-gray-50">
+             <h1 class="text-3xl font-bold text-center md:text-left" style="color: var(--brand-secondary);">
+                <i class="fas fa-crown mr-2 text-amber-500"></i> Luxury Property Card Generator
+            </h1>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8 lg:gap-12 p-6 md:p-8">
+            <!-- Input Form -->
+            <form id="cardForm" class="space-y-5">
+                 <!-- Form Section Title -->
+                 <h2 class="text-xl font-semibold text-gray-700 border-b pb-2 mb-4">Card Details</h2>
+
+                <div>
+                    <label for="bgImageInput" class="block text-sm font-medium text-gray-700 mb-1.5">Background Image URL</label>
+                    <input type="url" id="bgImageInput" placeholder="https://images.unsplash.com/..." value="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                           class="form-input w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-1">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-4 items-end">
+                    <div>
+                        <label for="logoInput" class="block text-sm font-medium text-gray-700 mb-1.5">Logo URL</label>
+                        <input type="url" id="logoInput" placeholder="https://via.placeholder.com/..." value="https://placeholder.com/wp-content/uploads/2018/10/placeholder.com-logo3.png"
+                               class="form-input w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-1">
+                    </div>
+                    <div class="w-28">
+                        <label for="logoWidthInput" class="block text-sm font-medium text-gray-700 mb-1.5">Width (px)</label>
+                        <input type="number" id="logoWidthInput" placeholder="100" value="120" min="20" max="300"
+                               class="form-input w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-1">
+                    </div>
+                </div>
+                <!-- Divider -->
+                 <hr class="border-gray-200 my-3">
+
+                <div>
+                    <label for="titleInput" class="block text-sm font-medium text-gray-700 mb-1.5">Title</label>
+                    <input type="text" id="titleInput" placeholder="E.g., Oceanview Penthouse" value="Oceanview Penthouse"
+                           class="form-input w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-1">
+                </div>
+
+                <div>
+                    <label for="subheadingInput" class="block text-sm font-medium text-gray-700 mb-1.5">Subheading</label>
+                    <input type="text" id="subheadingInput" placeholder="E.g., Exclusive Waterfront Living" value="Exclusive Waterfront Living"
+                           class="form-input w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-1">
+                </div>
+
+                <div>
+                    <label for="descriptionInput" class="block text-sm font-medium text-gray-700 mb-1.5">Description</label>
+                    <textarea id="descriptionInput" rows="3" placeholder="Highlight key features..."
+                              class="form-input w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-1">This stunning penthouse offers panoramic ocean views, bespoke luxury finishes, private elevator access, and world-class resort-style amenities.</textarea>
+                </div>
+                 <!-- Divider -->
+                 <hr class="border-gray-200 my-3">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="priceInput" class="block text-sm font-medium text-gray-700 mb-1.5">Price</label>
+                        <input type="text" id="priceInput" placeholder="$ 4,250,000" value="$ 4,250,000"
+                               class="form-input w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-1">
+                    </div>
+                    <div>
+                        <label for="paymentPlanInput" class="block text-sm font-medium text-gray-700 mb-1.5">Payment Details</label>
+                        <input type="text" id="paymentPlanInput" placeholder="E.g., Flexible terms available" value="Flexible terms available"
+                               class="form-input w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-1">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="contactInput" class="block text-sm font-medium text-gray-700 mb-1.5">Contact Info / Call to Action</label>
+                    <input type="text" id="contactInput" placeholder="E.g., Inquire: (555) LUX-URY1" value="Inquire: (555) LUX-URY1"
+                           class="form-input w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-1">
+                </div>
+                 <!-- Divider -->
+                 <hr class="border-gray-200 mt-5 mb-1">
+
+                <div class="pt-4">
+                    <button type="button" id="saveBtnAction" onclick="saveCard()" class="action-button w-full text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2">
+                        <i id="saveIcon" class="fas fa-download"></i>
+                        <span id="saveText">Save Card as Image</span>
+                    </button>
+                     <div class="text-center mt-2 h-5"> <!-- Reserve space for feedback -->
+                        <span id="saveFeedback" class="feedback-message hidden"></span>
+                     </div>
+                </div>
+            </form>
+
+            <!-- Card Preview -->
+            <div class="flex flex-col items-center justify-start pt-6 md:pt-10">
+                 <h2 class="text-xl font-semibold text-gray-700 mb-4">Live Preview</h2>
+                 <!-- Wrapper for aspect ratio or fixed size -->
+                <div id="cardPreviewWrapper" class="w-full max-w-md">
+                    <div id="cardPreview" class="card relative w-full rounded-xl shadow-lg" style="aspect-ratio: 4 / 5; min-height: 500px;">
+                        <!-- Background Image -->
+                        <div id="cardBg" class="absolute inset-0 bg-cover bg-center transition-all duration-500 ease-in-out z-0"></div>
+                        <!-- Overlay -->
+                        <div class="overlay absolute inset-0"></div> <!-- z-index: 1 from style -->
+                        <!-- Content Container -->
+                        <div class="relative h-full p-6 flex flex-col justify-between z-20"> <!-- Overall content above overlay -->
+                            <!-- Top Section: Logo and Save Button -->
+                            <div class="flex justify-between items-start"> <!-- Items here inherit z-20 -->
+                                <img id="cardLogo" src="#" alt="Logo" class="max-h-14 object-contain transition-all duration-300" style="width: 120px;" onerror="this.style.opacity=0; console.warn('Logo failed to load')">
+                                <button id="saveBtnVisual" class="save-btn text-white text-xl rounded-full w-11 h-11 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black focus:ring-white"
+                                        aria-label="Save property" onclick="toggleSave()">
+                                    <i class="far fa-bookmark"></i>
+                                </button> <!-- z-index: 3 from style -->
+                            </div>
+                            <!-- Bottom Content Area -->
+                             <!-- Items here inherit z-20 -->
+                            <div class="text-white mt-auto md:ml-auto md:w-3/4 card-content-wrapper">
+                                <h2 id="cardTitle" class="text-3xl lg:text-4xl font-bold mb-1.5 leading-tight"></h2>
+                                <h3 id="cardSubheading" class="text-lg lg:text-xl font-normal mb-4 opacity-90 tracking-wide"></h3>
+                                <p id="cardDescription" class="mb-5 text-sm lg:text-base leading-relaxed opacity-85 font-light"></p>
+                                <div class="space-y-2.5">
+                                    <!-- Price Box -->
+                                    <div class="bg-black bg-opacity-30 backdrop-blur-sm p-3.5 rounded-lg inline-block border border-gray-500/30">
+                                        <p id="cardPrice" class="text-2xl lg:text-3xl font-bold"></p>
+                                        <p id="cardPaymentPlan" class="text-xs opacity-80 mt-1"></p>
+                                    </div>
+                                    <!-- Contact Info -->
+                                    <p id="cardContact" class="text-xs bg-white bg-opacity-25 backdrop-blur-sm px-4 py-2 rounded-full inline-block mt-2 ml-2 border border-white/30"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+                <p class="text-xs text-gray-500 mt-4 text-center">Preview updates automatically.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const elements = {
+            form: document.getElementById('cardForm'),
+            bgImageInput: document.getElementById('bgImageInput'),
+            logoInput: document.getElementById('logoInput'),
+            logoWidthInput: document.getElementById('logoWidthInput'),
+            titleInput: document.getElementById('titleInput'),
+            subheadingInput: document.getElementById('subheadingInput'),
+            descriptionInput: document.getElementById('descriptionInput'),
+            priceInput: document.getElementById('priceInput'),
+            paymentPlanInput: document.getElementById('paymentPlanInput'),
+            contactInput: document.getElementById('contactInput'),
+            cardPreview: document.getElementById('cardPreview'),
+            cardBg: document.getElementById('cardBg'),
+            cardLogo: document.getElementById('cardLogo'),
+            cardTitle: document.getElementById('cardTitle'),
+            cardSubheading: document.getElementById('cardSubheading'),
+            cardDescription: document.getElementById('cardDescription'),
+            cardPrice: document.getElementById('cardPrice'),
+            cardPaymentPlan: document.getElementById('cardPaymentPlan'),
+            cardContact: document.getElementById('cardContact'),
+            saveBtnVisual: document.getElementById('saveBtnVisual'),
+            saveBtnAction: document.getElementById('saveBtnAction'),
+            saveIcon: document.getElementById('saveIcon'),
+            saveText: document.getElementById('saveText'),
+            saveFeedback: document.getElementById('saveFeedback')
+         };
+
+        // --- Default Values ---
+        const defaultValues = {
+            bgImage: elements.bgImageInput.value || 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80',
+            logo: elements.logoInput.value || 'https://placeholder.com/wp-content/uploads/2018/10/placeholder.com-logo3.png',
+            logoWidth: elements.logoWidthInput.value || 120,
+            title: elements.titleInput.value || 'Oceanview Penthouse',
+            subheading: elements.subheadingInput.value || 'Exclusive Waterfront Living',
+            description: elements.descriptionInput.value || 'This stunning penthouse offers panoramic ocean views, bespoke luxury finishes, private elevator access, and world-class resort-style amenities.',
+            price: elements.priceInput.value || '$ 4,250,000',
+            paymentPlan: elements.paymentPlanInput.value || 'Flexible terms available',
+            contact: elements.contactInput.value || 'Inquire: (555) LUX-URY1'
+        };
+
+        // --- Utility Functions ---
+        const debounce = (func, delay) => {
+             let timer;
+            return function(...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => func.apply(this, args), delay);
+            };
+        };
+
+        const showFeedback = (element, message, isError = false, duration = 3500) => {
+             element.textContent = message;
+             element.className = `feedback-message ${isError ? 'feedback-error' : 'feedback-success'}`;
+             element.classList.remove('hidden');
+              if (element.timeoutId) clearTimeout(element.timeoutId);
+             if (duration > 0) {
+                element.timeoutId = setTimeout(() => {
+                    if (element.textContent === message) {
+                         element.classList.add('hidden');
+                    }
+                }, duration);
+             }
+        };
+
+        // --- Update Functions ---
+
+        // Function to fetch image and convert to Data URL
+        async function fetchAndSetLogo(url) {
+            if (!url) {
+                elements.cardLogo.src = ''; // Clear src
+                elements.cardLogo.style.opacity = 0;
+                return;
+            }
+             // Show loading state? Optional.
+             // elements.cardLogo.style.opacity = 0.5;
+
+            try {
+                const response = await fetch(url, { mode: 'cors' }); // Attempt CORS fetch
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const blob = await response.blob();
+
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    elements.cardLogo.src = reader.result; // Set Base64 Data URL
+                    elements.cardLogo.style.opacity = 1;
+                };
+                 reader.onerror = () => {
+                      console.error("FileReader error reading blob for logo.");
+                      elements.cardLogo.src = ''; // Clear src on error
+                      elements.cardLogo.style.opacity = 0;
+                 }
+                reader.readAsDataURL(blob);
+
+            } catch (error) {
+                console.error(`Error fetching logo (${url}):`, error);
+                 // If fetch fails (CORS, network error, etc.), try setting the original URL directly
+                 // html2canvas *might* still render it if the browser can, but CORS issues likely remain for canvas
+                 console.warn(`Falling back to direct URL for logo due to fetch error. Canvas capture might fail for this image.`);
+                 elements.cardLogo.src = url;
+                 elements.cardLogo.style.opacity = 1; // Still show it in preview
+                  // Optionally display an error icon or message in preview
+            }
+        }
+
+        function updateCardPreview() {
+             // Update background image directly
+             elements.cardBg.style.backgroundImage = `url('${elements.bgImageInput.value || defaultValues.bgImage}')`;
+
+             // Fetch and update logo using the new function
+             const logoUrl = elements.logoInput.value || defaultValues.logo;
+             fetchAndSetLogo(logoUrl); // Let this handle setting the src asynchronously
+
+             // Update logo width immediately
+            elements.cardLogo.style.width = `${elements.logoWidthInput.value || defaultValues.logoWidth}px`;
+
+             // Update text content
+             elements.cardTitle.textContent = elements.titleInput.value || defaultValues.title;
+             elements.cardSubheading.textContent = elements.subheadingInput.value || defaultValues.subheading;
+             elements.cardDescription.textContent = elements.descriptionInput.value || defaultValues.description;
+             elements.cardPrice.textContent = elements.priceInput.value || defaultValues.price;
+             elements.cardPaymentPlan.textContent = elements.paymentPlanInput.value || defaultValues.paymentPlan;
+             elements.cardContact.textContent = elements.contactInput.value || defaultValues.contact;
+        }
+
+        // Debounced update function - Now calls the main update function
+        const debouncedUpdate = debounce(updateCardPreview, 400); // Slightly increased delay
+
+        // --- Event Listeners ---
+        elements.form.addEventListener('input', (event) => {
+            // Don't trigger update immediately for logo URL, let blur or separate handler do it
+            // Or just let debounce handle it, fetch will run after typing stops.
+            if (Object.values(elements).includes(event.target)) {
+                  debouncedUpdate();
+             }
+        });
+
+        // elements.logoInput.addEventListener('blur', () => {
+        //      // Optionally trigger logo fetch specifically on blur if needed
+        //      fetchAndSetLogo(elements.logoInput.value || defaultValues.logo);
+        // });
+
+
+        // --- Action Functions ---
+        function toggleSave() {
+             elements.saveBtnVisual.classList.toggle('saved');
+            const isSaved = elements.saveBtnVisual.classList.contains('saved');
+            elements.saveBtnVisual.innerHTML = isSaved ? '<i class="fas fa-bookmark"></i>' : '<i class="far fa-bookmark"></i>';
+            elements.saveBtnVisual.setAttribute('aria-label', isSaved ? 'Unsave property' : 'Save property');
+        }
+
+        async function saveCard() {
+            elements.saveBtnAction.disabled = true;
+            elements.saveIcon.className = 'fas fa-spinner fa-spin';
+            elements.saveText.textContent = 'Generating...';
+            elements.saveFeedback.classList.add('hidden');
+
+            // Ensure logo Data URL is set (if possible) before capture
+            // The debouncedUpdate should have handled this, but add delay as fallback
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            try {
+                console.log("Attempting html2canvas capture...");
+                 // Add crossorigin="anonymous" to the preview logo img temporarily? Might help.
+                 // elements.cardLogo.setAttribute('crossorigin', 'anonymous'); // Add this before canvas, remove after
+
+                const canvas = await html2canvas(elements.cardPreview, {
+                    scale: 2.5,
+                    logging: true, // Enable logging temporarily for debugging
+                    useCORS: true, // Still needed for background potentially, and good practice
+                    allowTaint: false, // MUST be false with useCORS: true
+                    backgroundColor: '#ffffff', // Ensure solid background if needed
+                    removeContainer: true,
+                     // Explicitly set width/height to avoid potential calculation issues
+                     width: elements.cardPreview.offsetWidth,
+                     height: elements.cardPreview.offsetHeight,
+                     scrollX: -window.scrollX, // Capture relative to viewport
+                     scrollY: -window.scrollY,
+                     windowWidth: document.documentElement.offsetWidth,
+                     windowHeight: document.documentElement.offsetHeight
+                });
+
+                 // elements.cardLogo.removeAttribute('crossorigin'); // Remove after capture
+
+                console.log("Canvas generated.");
+                const link = document.createElement('a');
+                const filename = (elements.titleInput.value || 'luxury-property').toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-card.png';
+                link.download = filename;
+                link.href = canvas.toDataURL('image/png', 0.95); // High quality PNG
+                link.click();
+                console.log("Download triggered.");
+                showFeedback(elements.saveFeedback, 'Card saved successfully!', false);
+
+            } catch (error) {
+                 console.error("Error generating card image:", error);
+                 let errorMsg = `Error generating image. Check console for details.`;
+                 if (error.message && (error.message.includes('CORS') || error.message.includes('tainted'))) {
+                      errorMsg = 'Error: Could not capture external images due to security restrictions (CORS).';
+                 }
+                showFeedback(elements.saveFeedback, errorMsg, true, 6000);
+            } finally {
+                elements.saveBtnAction.disabled = false;
+                elements.saveIcon.className = 'fas fa-download';
+                elements.saveText.textContent = 'Save Card as Image';
+            }
+        }
+
+        // --- Initialisation ---
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCardPreview(); // Load initial preview
+        });
+
+    </script>
+</body>
+</html>
