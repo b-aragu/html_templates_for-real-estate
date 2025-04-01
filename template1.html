@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxury Real Estate Ad Generator (Kenya)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --gold: #c5a47e; /* Keep custom properties for key brand colors */
+            --dark: #1a1a1a;
+            --light: #ffffff;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f7fafc; /* Slightly softer Tailwind gray */
+        }
+
+        /* --- Ad Preview Styles --- */
+        .ad-preview {
+            width: 800px; /* Fixed size for consistency */
+            height: 600px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            background-color: #e2e8f0; /* Fallback background */
+        }
+
+        .bg-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Cover ensures the image fills the container */
+            z-index: 1;
+        }
+
+        /* Corrected gradient syntax */
+        .ad-overlay {
+            position: absolute;
+            inset: 0; /* Shortcut for top, left, right, bottom 0 */
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.7)); /* Added missing closing parenthesis */
+            padding: 40px;
+            color: var(--light);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end; /* Align content to the bottom */
+            z-index: 2;
+        }
+
+        .logo-container {
+            position: absolute; /* Position logo at the top */
+            top: 40px;
+            left: 40px;
+            max-width: 180px; /* Slightly smaller max width */
+            max-height: 60px; /* Max height to prevent overly tall logos */
+            z-index: 3; /* Ensure logo is above overlay */
+        }
+
+        .logo-container img {
+            max-width: 100%;
+            max-height: 100%;
+            height: auto;
+            object-fit: contain; /* Ensure logo scales nicely */
+        }
+
+        .ad-content {
+             /* Container for text below logo */
+             margin-top: auto; /* Pushes content to bottom */
+        }
+
+        .ad-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem; /* 56px */
+            line-height: 1.1;
+            margin-bottom: 0.75rem; /* 12px */
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.6); /* Slightly softer shadow */
+        }
+
+        .ad-subtitle {
+            font-size: 1.5rem; /* 24px */
+            font-weight: 300;
+            margin-bottom: 1rem; /* 16px */
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+            max-width: 75%; /* Allow slightly more width */
+        }
+
+        .ad-description {
+            font-weight: 300;
+            line-height: 1.6;
+            max-width: 65%; /* Allow slightly more width */
+            margin-bottom: 2rem; /* 32px */
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+            font-size: 1rem; /* Explicit font size */
+        }
+
+        .price-section {
+            /* No background needed */
+            padding: 0;
+            display: inline-block; /* Keeps elements together */
+        }
+
+        .price {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem; /* 40px */
+            color: var(--gold);
+            margin-bottom: 0.5rem; /* 8px */
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+        }
+
+        .payment-plan {
+            font-weight: 300;
+            font-size: 1.125rem; /* 18px */
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+        }
+
+        /* Placeholder styling */
+        .bg-placeholder {
+            position: absolute;
+            inset: 0;
+            background-color: #f0f0f0;
+             /* Simplified diagonal lines */
+            background-image: repeating-linear-gradient(
+              45deg,
+              #e0e0e0,
+              #e0e0e0 10px,
+              #f0f0f0 10px,
+              #f0f0f0 20px
+            );
+            z-index: 0; /* Behind image and overlay */
+            display: flex; /* Use flex to center text */
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bg-placeholder-text {
+            font-size: 1.5rem; /* 24px */
+            color: #a0aec0; /* Tailwind gray-500 */
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Helper class for download feedback */
+        .feedback-message {
+            font-size: 0.875rem; /* text-sm */
+            margin-left: 0.5rem;
+        }
+        .feedback-success { color: #16a34a; } /* green-600 */
+        .feedback-error { color: #dc2626; } /* red-600 */
+
+    </style>
+</head>
+<body class="p-8 bg-gray-100">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <!-- Form Section -->
+        <div class="bg-white p-8 rounded-xl shadow-lg order-last lg:order-first">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-3xl font-bold text-gray-800">Create Your Luxury Ad</h1>
+                <div class="flex items-center bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm font-medium">
+                    <i class="fas fa-shilling-sign mr-1.5"></i>
+                    <span>Kenyan Shillings (KSH)</span>
+                </div>
+            </div>
+
+            <form id="adForm" class="space-y-5">
+                <div>
+                    <label for="logoUpload" class="block text-sm font-medium text-gray-700 mb-1">Upload Logo</label>
+                    <div class="mt-1 relative border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-amber-400 transition duration-150 ease-in-out">
+                        <input type="file" id="logoUpload" name="logoUpload" accept="image/png, image/jpeg, image/svg+xml" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" aria-describedby="logo-hint">
+                        <div class="flex flex-col items-center justify-center space-y-1">
+                            <i class="fas fa-image text-3xl text-gray-400"></i>
+                            <p class="text-sm text-gray-600">Click or drag to upload logo</p>
+                            <p id="logo-hint" class="text-xs text-gray-500">PNG, JPG, SVG (max 2MB)</p>
+                        </div>
+                        <div id="logoPreviewContainer" class="hidden mt-3 mx-auto w-32 h-16 flex items-center justify-center">
+                            <img id="logoPreview" class="max-w-full max-h-full object-contain" src="#" alt="Logo preview">
+                        </div>
+                        <p id="logoFilename" class="text-xs text-gray-500 mt-1"></p>
+                    </div>
+                     <p id="logoError" class="text-xs text-red-600 mt-1"></p>
+                </div>
+
+                <div>
+                    <label for="bgUpload" class="block text-sm font-medium text-gray-700 mb-1">Upload Background Image</label>
+                    <div class="mt-1 relative border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-amber-400 transition duration-150 ease-in-out">
+                        <input type="file" id="bgUpload" name="bgUpload" accept="image/png, image/jpeg, image/webp" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" aria-describedby="bg-hint">
+                        <div class="flex flex-col items-center justify-center space-y-1">
+                            <i class="fas fa-mountain-sun text-3xl text-gray-400"></i>
+                            <p class="text-sm text-gray-600">Click or drag to upload property image</p>
+                            <p id="bg-hint" class="text-xs text-gray-500">High-res landscape JPG, PNG, WEBP (max 5MB)</p>
+                        </div>
+                        <div id="bgPreviewContainer" class="hidden mt-3 mx-auto h-24 w-auto flex items-center justify-center">
+                            <img id="bgPreview" class="max-h-full w-auto rounded" src="#" alt="Background image preview">
+                        </div>
+                         <p id="bgFilename" class="text-xs text-gray-500 mt-1"></p>
+                    </div>
+                    <p id="bgError" class="text-xs text-red-600 mt-1"></p>
+                </div>
+
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700 mb-1">Property Title</label>
+                    <input type="text" id="title" name="title" placeholder="E.g., Opulent 5-Bedroom Mansion" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                </div>
+
+                <div>
+                    <label for="subtitle" class="block text-sm font-medium text-gray-700 mb-1">Subtitle / Location</label>
+                    <input type="text" id="subtitle" name="subtitle" placeholder="E.g., Exclusive Residence in Runda" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                </div>
+
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea id="description" name="description" rows="4" placeholder="Highlight key features, amenities, and unique selling points..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="price" class="block text-sm font-medium text-gray-700 mb-1">Price (KSH)</label>
+                        <div class="relative">
+                             {/* Using type="text" for custom formatting, add pattern for basic validation */}
+                            <input type="text" id="price" name="price" inputmode="numeric" placeholder="75,000,000" class="w-full pl-4 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500" pattern="[0-9,]*">
+                             <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none text-sm -z-10 opacity-0">KSH</span> {/* Hidden helper for formatting */}
+                        </div>
+                    </div>
+                    <div>
+                        <label for="paymentPlan" class="block text-sm font-medium text-gray-700 mb-1">Payment Plan (Optional)</label>
+                        <input type="text" id="paymentPlan" name="paymentPlan" placeholder="E.g., 20% Deposit, Balance over 12 Months" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button type="button" id="downloadBtn" onclick="downloadAd()" class="w-full bg-amber-600 hover:bg-amber-700 text-white py-3 px-4 rounded-lg transition duration-300 ease-in-out flex items-center justify-center gap-2 font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i id="downloadIcon" class="fas fa-download"></i>
+                        <span id="downloadText">Download Ad</span>
+                    </button>
+                    <span id="downloadFeedback" class="feedback-message mt-2 block text-center"></span>
+                </div>
+            </form>
+        </div>
+
+        <!-- Preview Section -->
+        <div class="relative order-first lg:order-last">
+            <p class="text-sm text-gray-600 mb-2 text-center lg:text-left">Live Preview:</p>
+            <div class="border border-gray-200 rounded-xl p-1 bg-white shadow-sm">
+                <div class="ad-preview" id="adPreview">
+                    <!-- Placeholder shown when no BG image -->
+                    <div class="bg-placeholder" id="bgPlaceholder">
+                        <span class="bg-placeholder-text">Upload a background image to see preview</span>
+                    </div>
+                    <!-- Background Image -->
+                    <img id="backgroundImage" class="bg-image" style="display: none;" alt="Property background image">
+                    <!-- Logo (positioned absolutely) -->
+                    <div class="logo-container">
+                        <img id="previewLogo" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Company Logo" style="display: none;">
+                    </div>
+                    <!-- Text Overlay -->
+                    <div class="ad-overlay">
+                        <!-- Content Wrapper -->
+                        <div class="ad-content">
+                             <h1 class="ad-title" id="previewTitle">Luxury Villa</h1>
+                             <h2 class="ad-subtitle" id="previewSubtitle">Exclusive Residence</h2>
+                             <p class="ad-description" id="previewDescription">Experience unparalleled luxury living. Describe the key features and unique selling points here.</p>
+                             <div class="price-section">
+                                 <div class="price" id="previewPrice">KSH 0</div>
+                                 <div class="payment-plan" id="previewPaymentPlan">Payment plan details</div>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <p class="mt-3 text-xs text-gray-500 text-center flex items-center justify-center gap-1.5">
+                <i class="fas fa-info-circle"></i>
+                <span>Preview updates automatically. Use high-quality images for best results.</span>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // --- Configuration ---
+        const MAX_LOGO_SIZE_MB = 2;
+        const MAX_BG_SIZE_MB = 5;
+
+        // --- DOM Elements ---
+        const logoUpload = document.getElementById('logoUpload');
+        const logoPreviewContainer = document.getElementById('logoPreviewContainer');
+        const logoPreview = document.getElementById('logoPreview');
+        const logoFilename = document.getElementById('logoFilename');
+        const logoError = document.getElementById('logoError');
+        const previewLogo = document.getElementById('previewLogo');
+
+        const bgUpload = document.getElementById('bgUpload');
+        const bgPreviewContainer = document.getElementById('bgPreviewContainer');
+        const bgPreview = document.getElementById('bgPreview');
+        const bgFilename = document.getElementById('bgFilename');
+        const bgError = document.getElementById('bgError');
+        const backgroundImage = document.getElementById('backgroundImage');
+        const bgPlaceholder = document.getElementById('bgPlaceholder');
+
+        const titleInput = document.getElementById('title');
+        const subtitleInput = document.getElementById('subtitle');
+        const descriptionInput = document.getElementById('description');
+        const priceInput = document.getElementById('price');
+        const paymentPlanInput = document.getElementById('paymentPlan');
+
+        const previewTitle = document.getElementById('previewTitle');
+        const previewSubtitle = document.getElementById('previewSubtitle');
+        const previewDescription = document.getElementById('previewDescription');
+        const previewPrice = document.getElementById('previewPrice');
+        const previewPaymentPlan = document.getElementById('previewPaymentPlan');
+
+        const downloadBtn = document.getElementById('downloadBtn');
+        const downloadIcon = document.getElementById('downloadIcon');
+        const downloadText = document.getElementById('downloadText');
+        const downloadFeedback = document.getElementById('downloadFeedback');
+        const adPreview = document.getElementById('adPreview');
+
+        // --- Utility Functions ---
+        const debounce = (func, delay) => {
+            let timer;
+            return function(...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => func.apply(this, args), delay);
+            };
+        };
+
+        // Format number as KSH currency
+        const formatKsh = (value) => {
+            const num = parseInt(value.replace(/[^0-9]/g, ''), 10);
+            if (isNaN(num)) return 'KSH 0';
+            return 'KSH ' + num.toLocaleString('en-KE'); // Use locale for formatting
+        };
+
+        // Function to show feedback message
+        const showFeedback = (element, message, isError = false, duration = 3000) => {
+            element.textContent = message;
+            element.className = `feedback-message ${isError ? 'feedback-error' : 'feedback-success'}`;
+            element.style.display = 'block';
+            setTimeout(() => {
+                 if (element.textContent === message) { // Only hide if message hasn't changed
+                     element.style.display = 'none';
+                     element.textContent = '';
+                 }
+            }, duration);
+        };
+
+        // --- Event Listeners ---
+
+        // File Input Handling (Logo)
+        logoUpload.addEventListener('change', (e) => {
+            handleFileUpload(e.target, logoPreview, previewLogo, logoPreviewContainer, logoFilename, logoError, MAX_LOGO_SIZE_MB, 'logo');
+        });
+
+        // File Input Handling (Background)
+        bgUpload.addEventListener('change', (e) => {
+            handleFileUpload(e.target, bgPreview, backgroundImage, bgPreviewContainer, bgFilename, bgError, MAX_BG_SIZE_MB, 'background');
+        });
+
+        function handleFileUpload(inputElement, formPreviewImg, adPreviewImg, previewContainer, filenameElement, errorElement, maxSizeMB, type) {
+            const file = inputElement.files[0];
+            // Reset previous state
+            filenameElement.textContent = '';
+            errorElement.textContent = '';
+            previewContainer.classList.add('hidden');
+            formPreviewImg.src = '#';
+            adPreviewImg.style.display = 'none';
+             if (type === 'background') {
+                bgPlaceholder.style.display = 'flex'; // Show placeholder if no valid BG
+            }
+             if (type === 'logo') {
+                 previewLogo.style.display = 'none'; // Hide ad logo preview explicitly
+             }
+
+
+            if (!file) {
+                // If user cancels file selection, clear the input
+                inputElement.value = ''; // Allows re-selecting the same file
+                return;
+            }
+
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                errorElement.textContent = 'Error: Please select an image file.';
+                inputElement.value = ''; // Clear invalid selection
+                return;
+            }
+
+            // Validate file size
+            if (file.size > maxSizeMB * 1024 * 1024) {
+                errorElement.textContent = `Error: File size exceeds ${maxSizeMB}MB limit.`;
+                inputElement.value = ''; // Clear invalid selection
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const imageUrl = event.target.result;
+                formPreviewImg.src = imageUrl;
+                adPreviewImg.src = imageUrl;
+                adPreviewImg.style.display = 'block';
+                previewContainer.classList.remove('hidden');
+                filenameElement.textContent = file.name;
+
+                if (type === 'background') {
+                    bgPlaceholder.style.display = 'none'; // Hide placeholder on successful BG load
+                }
+            }
+            reader.onerror = function() {
+                 errorElement.textContent = 'Error reading file.';
+                 inputElement.value = '';
+            }
+            reader.readAsDataURL(file);
+        }
+
+
+        // Live Text Updates
+        const inputsToUpdate = [
+            { input: titleInput, preview: previewTitle, defaultValue: "Luxury Villa" },
+            { input: subtitleInput, preview: previewSubtitle, defaultValue: "Exclusive Residence" },
+            { input: descriptionInput, preview: previewDescription, defaultValue: "Property description goes here." },
+            { input: paymentPlanInput, preview: previewPaymentPlan, defaultValue: "Payment plan details" }
+        ];
+
+        inputsToUpdate.forEach(({ input, preview, defaultValue }) => {
+            input.addEventListener('input', debounce(() => {
+                preview.textContent = input.value || defaultValue; // Use default if empty
+            }, 250)); // Debounce updates slightly
+        });
+
+        // Live Price Update & Formatting
+        priceInput.addEventListener('input', debounce(() => {
+            // Format the input field itself
+            const cursorPos = priceInput.selectionStart;
+            const originalLength = priceInput.value.length;
+            const numericValue = priceInput.value.replace(/[^0-9]/g, '');
+            const formattedValue = numericValue ? parseInt(numericValue, 10).toLocaleString('en-KE') : '';
+            priceInput.value = formattedValue;
+
+            // Adjust cursor position after formatting
+             const newLength = priceInput.value.length;
+             if(cursorPos !== null) {
+                 priceInput.selectionEnd = cursorPos + (newLength - originalLength);
+             }
+
+
+            // Update the preview
+            previewPrice.textContent = formattedValue ? 'KSH ' + formattedValue : 'KSH 0';
+        }, 300)); // Slightly longer debounce for formatting complexity
+
+        // Download Functionality
+        async function downloadAd() {
+            downloadBtn.disabled = true;
+            downloadIcon.className = 'fas fa-spinner fa-spin';
+            downloadText.textContent = 'Generating...';
+            downloadFeedback.textContent = '';
+            downloadFeedback.style.display = 'none';
+
+            // --- Quality Improvement Approach: Temporary upscale ---
+            // Store original styles
+            const originalWidth = adPreview.offsetWidth;
+            const originalHeight = adPreview.offsetHeight;
+            const textElements = adPreview.querySelectorAll('h1, h2, p, div.price, div.payment-plan');
+            const originalFontSizes = new Map();
+            textElements.forEach(el => {
+                originalFontSizes.set(el, window.getComputedStyle(el).fontSize);
+            });
+
+            // Temporarily scale up for better resolution capture
+            const scale = 2; // Increase scale for higher quality, but affects performance
+            adPreview.style.width = `${originalWidth * scale}px`;
+            adPreview.style.height = `${originalHeight * scale}px`;
+            adPreview.style.transform = `scale(${1/scale})`; // Use transform to scale content visually
+            adPreview.style.transformOrigin = 'top left';
+
+             // Adjust font sizes within the scaled container
+            textElements.forEach(el => {
+                const originalSize = parseFloat(originalFontSizes.get(el));
+                if (!isNaN(originalSize)) {
+                    el.style.fontSize = `${originalSize * scale}px`;
+                }
+            });
+            // Force reflow might be needed in some browsers, but often not
+            // await new Promise(resolve => requestAnimationFrame(resolve));
+
+            try {
+                const canvas = await html2canvas(adPreview, {
+                    scale: scale, // Use html2canvas's scale option matching the manual scale
+                    logging: false, // Disable console logging from html2canvas
+                    useCORS: true, // Necessary for external images (like logo/bg) if hosted elsewhere
+                    // allowTaint: false, // Avoid allowTaint with useCORS: true
+                    width: originalWidth * scale, // Explicitly set canvas dimensions
+                    height: originalHeight * scale,
+                     x: 0, // Capture from top-left
+                     y: 0,
+                     // Ensure background is captured if no image is set but placeholder is visible
+                     backgroundColor: window.getComputedStyle(bgPlaceholder).backgroundColor,
+                     // Improve text rendering if needed (might slightly increase size)
+                     // foreignObjectRendering: true,
+                });
+
+                 // --- Create and trigger download ---
+                const link = document.createElement('a');
+                const propertyTitle = titleInput.value || 'luxury-property';
+                link.download = `${propertyTitle.toLowerCase().replace(/\s+/g, '-')}-ad.png`; // Sanitize filename
+                link.href = canvas.toDataURL('image/png', 1.0); // PNG format, highest quality
+                link.click();
+
+                showFeedback(downloadFeedback, 'Ad downloaded successfully!', false);
+
+            } catch (error) {
+                console.error("Error generating ad:", error);
+                showFeedback(downloadFeedback, `Error generating ad: ${error.message}`, true, 5000);
+                 // Check for common CORS issues if background/logo are external URLs
+                 if (error.message.includes('CORS') || error.message.includes('tainted')) {
+                      showFeedback(downloadFeedback, 'Error: Could not load external images due to security restrictions (CORS). Ensure images are hosted correctly or use uploaded files.', true, 8000);
+                 }
+
+            } finally {
+                 // --- Restore original styles ---
+                 adPreview.style.width = ''; // Reset to CSS defined width
+                 adPreview.style.height = '';
+                 adPreview.style.transform = '';
+                 adPreview.style.transformOrigin = '';
+                 textElements.forEach(el => {
+                     el.style.fontSize = ''; // Reset font size
+                 });
+
+
+                // --- Reset button state ---
+                downloadBtn.disabled = false;
+                downloadIcon.className = 'fas fa-download';
+                downloadText.textContent = 'Download Ad';
+            }
+        }
+
+        // --- Initialize ---
+        document.addEventListener('DOMContentLoaded', () => {
+             // Set initial default values in the form and trigger preview update
+            titleInput.value = "Exquisite Karen Villa";
+            subtitleInput.value = "Unmatched Luxury in a Prime Location";
+            descriptionInput.value = "Discover refined living in this stunning 5-bedroom villa. Featuring expansive gardens, a private pool, and state-of-the-art finishes in Nairobi's most sought-after neighborhood.";
+            priceInput.value = "120,000,000"; // Start with unformatted number
+            paymentPlanInput.value = "Flexible Payment Terms Available";
+
+            // Trigger initial updates
+             inputsToUpdate.forEach(({ input, preview, defaultValue }) => {
+                 preview.textContent = input.value || defaultValue;
+             });
+             // Format and update initial price
+             const initialNumericValue = priceInput.value.replace(/[^0-9]/g, '');
+             const initialFormattedValue = initialNumericValue ? parseInt(initialNumericValue, 10).toLocaleString('en-KE') : '';
+             priceInput.value = initialFormattedValue; // Set formatted value in input
+             previewPrice.textContent = initialFormattedValue ? 'KSH ' + initialFormattedValue : 'KSH 0'; // Set preview
+
+             // Ensure placeholder is visible initially if no BG image is set by default
+             if (!backgroundImage.src || backgroundImage.style.display === 'none') {
+                  bgPlaceholder.style.display = 'flex';
+             }
+        });
+
+    </script>
+</body>
+</html>
