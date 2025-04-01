@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Modern Property Ad Creator</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+<style>
+
+:root {
+
+--primary-color: #3a86ff;
+
+--secondary-color: #8338ec;
+
+--accent-color: #ff006e;
+
+--dark-color: #1a1a2e;
+
+--light-color: #f8f9fa;
+
+}
+
+body {
+
+font-family: 'Inter', sans-serif;
+
+background-color: #f5f7fa;
+
+padding: 20px;
+
+min-height: 100vh;
+
+}
+
+.main-container {
+
+max-width: 1200px;
+
+margin: 0 auto;
+
+display: grid;
+
+grid-template-columns: 1fr;
+
+gap: 30px;
+
+}
+
+.form-container {
+
+background: white;
+
+border-radius: 12px;
+
+padding: 30px;
+
+box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+
+}
+
+.ad-preview-container {
+
+background: white;
+
+border-radius: 12px;
+
+padding: 30px;
+
+box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+
+display: flex;
+
+flex-direction: column;
+
+min-height: 100%;
+
+}
+
+.form-title {
+
+color: var(--primary-color);
+
+font-size: 24px;
+
+font-weight: 700;
+
+margin-bottom: 20px;
+
+display: flex;
+
+align-items: center;
+
+gap: 10px;
+
+}
+
+.form-grid {
+
+display: grid;
+
+grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+
+gap: 20px;
+
+}
+
+.form-group {
+
+margin-bottom: 15px;
+
+}
+
+.form-label {
+
+display: block;
+
+margin-bottom: 8px;
+
+font-weight: 600;
+
+color: var(--dark-color);
+
+font-size: 14px;
+
+display: flex;
+
+align-items: center;
+
+gap: 8px;
+
+}
+
+.form-input, .form-textarea {
+
+width: 100%;
+
+padding: 12px 15px;
+
+border: 2px solid #e2e8f0;
+
+border-radius: 8px;
+
+font-size: 14px;
+
+transition: all 0.3s;
+
+}
+
+.form-input:focus, .form-textarea:focus {
+
+outline: none;
+
+border-color: var(--primary-color);
+
+box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.2);
+
+}
+
+.form-textarea {
+
+min-height: 120px;
+
+resize: vertical;
+
+}
+
+.btn {
+
+padding: 12px 20px;
+
+border-radius: 8px;
+
+font-weight: 600;
+
+font-size: 14px;
+
+cursor: pointer;
+
+transition: all 0.3s;
+
+display: inline-flex;
+
+align-items: center;
+
+justify-content: center;
+
+gap: 8px;
+
+}
+
+.btn-primary {
+
+background-color: var(--primary-color);
+
+color: white;
+
+border: none;
+
+}
+
+.btn-primary:hover {
+
+background-color: #2a75e6;
+
+transform: translateY(-2px);
+
+box-shadow: 0 4px 12px rgba(58, 134, 255, 0.2);
+
+}
+
+.btn-secondary {
+
+background-color: white;
+
+color: var(--primary-color);
+
+border: 2px solid var(--primary-color);
+
+}
+
+.btn-secondary:hover {
+
+background-color: #f5f9ff;
+
+transform: translateY(-2px);
+
+}
+
+.btn-group {
+
+display: flex;
+
+gap: 15px;
+
+margin-top: 20px;
+
+}
+
+/* Ad Preview Styles */
+
+.ad-preview {
+
+width: 100%;
+
+border-radius: 12px;
+
+overflow: hidden;
+
+box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+
+background: white;
+
+flex-grow: 1;
+
+display: none;
+
+}
+
+.ad-image-container {
+
+position: relative;
+
+width: 100%;
+
+height: 280px;
+
+overflow: hidden;
+
+}
+
+.ad-image {
+
+width: 100%;
+
+height: 100%;
+
+object-fit: cover;
+
+transition: transform 0.5s;
+
+}
+
+.ad-badge {
+
+position: absolute;
+
+top: 20px;
+
+right: 20px;
+
+background: white;
+
+padding: 8px 15px;
+
+border-radius: 20px;
+
+box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+
+display: flex;
+
+align-items: center;
+
+gap: 8px;
+
+font-weight: 600;
+
+font-size: 14px;
+
+color: var(--primary-color);
+
+}
+
+.ad-price {
+
+position: absolute;
+
+bottom: 20px;
+
+left: 20px;
+
+background: white;
+
+padding: 10px 20px;
+
+border-radius: 8px;
+
+font-weight: 700;
+
+font-size: 24px;
+
+color: var(--primary-color);
+
+box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+
+}
+
+.ad-content {
+
+padding: 25px;
+
+}
+
+.ad-title {
+
+font-size: 24px;
+
+font-weight: 700;
+
+color: var(--dark-color);
+
+margin-bottom: 10px;
+
+line-height: 1.3;
+
+}
+
+.ad-subtitle {
+
+font-size: 16px;
+
+color: var(--secondary-color);
+
+font-weight: 600;
+
+margin-bottom: 15px;
+
+}
+
+.ad-description {
+
+color: #64748b;
+
+line-height: 1.6;
+
+margin-bottom: 20px;
+
+font-size: 14px;
+
+}
+
+.ad-features {
+
+display: grid;
+
+grid-template-columns: repeat(2, 1fr);
+
+gap: 15px;
+
+margin-bottom: 25px;
+
+}
+
+.feature-item {
+
+display: flex;
+
+align-items: center;
+
+gap: 10px;
+
+font-size: 14px;
+
+}
+
+.feature-icon {
+
+width: 24px;
+
+height: 24px;
+
+border-radius: 50%;
+
+background: #e6f0ff;
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+color: var(--primary-color);
+
+}
+
+.ad-contact {
+
+border-top: 1px solid #e2e8f0;
+
+padding-top: 20px;
+
+}
+
+.contact-item {
+
+display: flex;
+
+align-items: center;
+
+gap: 10px;
+
+margin-bottom: 10px;
+
+font-size: 14px;
+
+color: #475569;
+
+}
+
+.contact-icon {
+
+color: var(--primary-color);
+
+width: 20px;
+
+}
+
+.spinner {
+
+animation: spin 1s linear infinite;
+
+}
+
+@keyframes spin {
+
+from { transform: rotate(0deg); }
+
+to { transform: rotate(360deg); }
+
+}
+
+.loading-overlay {
+
+position: fixed;
+
+top: 0;
+
+left: 0;
+
+width: 100%;
+
+height: 100%;
+
+background: rgba(0,0,0,0.7);
+
+display: flex;
+
+flex-direction: column;
+
+justify-content: center;
+
+align-items: center;
+
+z-index: 1000;
+
+color: white;
+
+}
+
+.notification {
+
+position: fixed;
+
+top: 20px;
+
+right: 20px;
+
+background: rgba(0,0,0,0.8);
+
+color: white;
+
+padding: 10px 20px;
+
+border-radius: 8px;
+
+display: flex;
+
+align-items: center;
+
+gap: 10px;
+
+z-index: 1000;
+
+transform: translateY(-100px);
+
+opacity: 0;
+
+transition: all 0.3s;
+
+}
+
+.notification.show {
+
+transform: translateY(0);
+
+opacity: 1;
+
+}
+
+@media (min-width: 1024px) {
+
+.main-container {
+
+grid-template-columns: 1fr 1fr;
+
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="main-container">
+
+<div class="form-container">
+
+<h2 class="form-title">
+
+<i class="fas fa-pen-alt"></i>
+
+Create Your Property Ad
+
+</h2>
+
+<div class="form-grid">
+
+<div class="form-group">
+
+<label for="logoUrl" class="form-label">
+
+<i class="fas fa-image"></i>
+
+Company Logo URL
+
+</label>
+
+<input type="text" id="logoUrl" class="form-input" placeholder="https://example.com/logo.png">
+
+</div>
+
+<div class="form-group">
+
+<label for="propertyImage" class="form-label">
+
+<i class="fas fa-camera"></i>
+
+Property Image URL
+
+</label>
+
+<input type="text" id="propertyImage" class="form-input" placeholder="https://example.com/property.jpg">
+
+</div>
+
+<div class="form-group">
+
+<label for="propertyTitle" class="form-label">
+
+<i class="fas fa-heading"></i>
+
+Property Title
+
+</label>
+
+<input type="text" id="propertyTitle" class="form-input" placeholder="Modern Luxury Villa">
+
+</div>
+
+<div class="form-group">
+
+<label for="propertyPrice" class="form-label">
+
+<i class="fas fa-tag"></i>
+
+Price
+
+</label>
+
+<input type="text" id="propertyPrice" class="form-input" placeholder="$1,250,000">
+
+</div>
+
+<div class="form-group">
+
+<label for="propertySubtitle" class="form-label">
+
+<i class="fas fa-map-marker-alt"></i>
+
+Location
+
+</label>
+
+<input type="text" id="propertySubtitle" class="form-input" placeholder="Beachfront, Malibu">
+
+</div>
+
+<div class="form-group">
+
+<label for="feature1" class="form-label">
+
+<i class="fas fa-bed"></i>
+
+Feature 1
+
+</label>
+
+<input type="text" id="feature1" class="form-input" placeholder="4 Bedrooms">
+
+</div>
+
+<div class="form-group">
+
+<label for="feature2" class="form-label">
+
+<i class="fas fa-bath"></i>
+
+Feature 2
+
+</label>
+
+<input type="text" id="feature2" class="form-input" placeholder="3 Bathrooms">
+
+</div>
+
+<div class="form-group">
+
+<label for="feature3" class="form-label">
+
+<i class="fas fa-ruler-combined"></i>
+
+Feature 3
+
+</label>
+
+<input type="text" id="feature3" class="form-input" placeholder="3,200 sq ft">
+
+</div>
+
+<div class="form-group">
+
+<label for="feature4" class="form-label">
+
+<i class="fas fa-swimming-pool"></i>
+
+Feature 4
+
+</label>
+
+<input type="text" id="feature4" class="form-input" placeholder="Infinity Pool">
+
+</div>
+
+<div class="form-group">
+
+<label for="propertyDescription" class="form-label">
+
+<i class="fas fa-align-left"></i>
+
+Description
+
+</label>
+
+<textarea id="propertyDescription" class="form-textarea" placeholder="Describe the property in detail..."></textarea>
+
+</div>
+
+<div class="form-group">
+
+<label for="contactInfo" class="form-label">
+
+<i class="fas fa-address-card"></i>
+
+Contact Information
+
+</label>
+
+<textarea id="contactInfo" class="form-textarea" placeholder="Agent: John Smith\nPhone: (555) 123-4567\nEmail: john@example.com\nwww.example.com"></textarea>
+
+</div>
+
+</div>
+
+<div class="btn-group">
+
+<button id="generateAdBtn" class="btn btn-primary">
+
+<i class="fas fa-magic"></i>
+
+Generate Ad
+
+</button>
+
+<button id="resetFormBtn" class="btn btn-secondary">
+
+<i class="fas fa-redo"></i>
+
+Reset Form
+
+</button>
+
+</div>
+
+</div>
+
+<div class="ad-preview-container">
+
+<h2 class="form-title">
+
+<i class="fas fa-eye"></i>
+
+Ad Preview
+
+</h2>
+
+<div id="adContainer" class="ad-preview">
+
+<div class="ad-image-container">
+
+<img id="adPropertyImage" class="ad-image" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80" alt="Luxury Property">
+
+<div class="ad-badge">
+
+<img id="adCompanyLogo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Luxury_Real_Estate_logo.svg/1200px-Luxury_Real_Estate_logo.svg.png" width="24">
+
+<span>Luxury Estates</span>
+
+</div>
+
+<div id="adPriceTag" class="ad-price">$1,250,000</div>
+
+</div>
+
+<div class="ad-content">
+
+<h1 id="adTitle" class="ad-title">Modern Luxury Villa</h1>
+
+<p id="adLocation" class="ad-subtitle">Beachfront, Malibu</p>
+
+<p id="adDescription" class="ad-description">
+
+This exquisite beachfront property offers panoramic ocean views from every room. The spacious 3,200 sq ft residence features floor-to-ceiling windows, a gourmet kitchen, and designer finishes throughout. Enjoy direct beach access and stunning sunsets from the expansive terrace.
+
+</p>
+
+<div class="ad-features">
+
+<div class="feature-item">
+
+<div class="feature-icon">
+
+<i class="fas fa-bed"></i>
+
+</div>
+
+<span id="feature1Text">4 Bedrooms</span>
+
+</div>
+
+<div class="feature-item">
+
+<div class="feature-icon">
+
+<i class="fas fa-bath"></i>
+
+</div>
+
+<span id="feature2Text">3 Bathrooms</span>
+
+</div>
+
+<div class="feature-item">
+
+<div class="feature-icon">
+
+<i class="fas fa-ruler-combined"></i>
+
+</div>
+
+<span id="feature3Text">3,200 sq ft</span>
+
+</div>
+
+<div class="feature-item">
+
+<div class="feature-icon">
+
+<i class="fas fa-swimming-pool"></i>
+
+</div>
+
+<span id="feature4Text">Infinity Pool</span>
+
+</div>
+
+</div>
+
+<div class="ad-contact">
+
+<div id="contactDetails">
+
+<div class="contact-item">
+
+<div class="contact-icon">
+
+<i class="fas fa-user"></i>
+
+</div>
+
+<span>Agent: John Smith</span>
+
+</div>
+
+<div class="contact-item">
+
+<div class="contact-icon">
+
+<i class="fas fa-phone"></i>
+
+</div>
+
+<span>Phone: (555) 123-4567</span>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div id="adActions" class="btn-group" style="margin-top: 20px; display: none;">
+
+<button id="downloadAdBtn" class="btn btn-primary">
+
+<i class="fas fa-download"></i>
+
+Download Ad
+
+</button>
+
+<button id="shareAdBtn" class="btn btn-secondary">
+
+<i class="fas fa-share-alt"></i>
+
+Share Ad
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<div id="notification" class="notification">
+
+<i class="fas fa-check-circle"></i>
+
+<span>Copied to clipboard!</span>
+
+</div>
+
+  
+
+<script>
+
+// DOM Elements
+
+const logoUrlInput = document.getElementById('logoUrl');
+
+const propertyImageInput = document.getElementById('propertyImage');
+
+const propertyTitleInput = document.getElementById('propertyTitle');
+
+const propertyPriceInput = document.getElementById('propertyPrice');
+
+const propertySubtitleInput = document.getElementById('propertySubtitle');
+
+const feature1Input = document.getElementById('feature1');
+
+const feature2Input = document.getElementById('feature2');
+
+const feature3Input = document.getElementById('feature3');
+
+const feature4Input = document.getElementById('feature4');
+
+const propertyDescriptionInput = document.getElementById('propertyDescription');
+
+const contactInfoInput = document.getElementById('contactInfo');
+
+const generateAdBtn = document.getElementById('generateAdBtn');
+
+const resetFormBtn = document.getElementById('resetFormBtn');
+
+const downloadAdBtn = document.getElementById('downloadAdBtn');
+
+const shareAdBtn = document.getElementById('shareAdBtn');
+
+const adContainer = document.getElementById('adContainer');
+
+const adActions = document.getElementById('adActions');
+
+const adPropertyImage = document.getElementById('adPropertyImage');
+
+const adCompanyLogo = document.getElementById('adCompanyLogo');
+
+const adPriceTag = document.getElementById('adPriceTag');
+
+const adTitle = document.getElementById('adTitle');
+
+const adLocation = document.getElementById('adLocation');
+
+const adDescription = document.getElementById('adDescription');
+
+const feature1Text = document.getElementById('feature1Text');
+
+const feature2Text = document.getElementById('feature2Text');
+
+const feature3Text = document.getElementById('feature3Text');
+
+const feature4Text = document.getElementById('feature4Text');
+
+const contactDetails = document.getElementById('contactDetails');
+
+const notification = document.getElementById('notification');
+
+// Generate button click handler
+
+generateAdBtn.addEventListener('click', () => {
+
+// Update ad preview with form data
+
+if (propertyImageInput.value) {
+
+adPropertyImage.src = propertyImageInput.value;
+
+}
+
+if (logoUrlInput.value) {
+
+adCompanyLogo.src = logoUrlInput.value;
+
+}
+
+adTitle.textContent = propertyTitleInput.value || 'Luxury Property';
+
+adPriceTag.textContent = propertyPriceInput.value || '$1,250,000';
+
+adLocation.textContent = propertySubtitleInput.value || 'Prime Location';
+
+adDescription.textContent = propertyDescriptionInput.value ||
+
+'This stunning property offers exceptional features and amenities. Contact us for more information and to schedule a private viewing.';
+
+// Update features
+
+feature1Text.textContent = feature1Input.value || '4 Bedrooms';
+
+feature2Text.textContent = feature2Input.value || '3 Bathrooms';
+
+feature3Text.textContent = feature3Input.value || '3,200 sq ft';
+
+feature4Text.textContent = feature4Input.value || 'Infinity Pool';
+
+// Update contact info
+
+if (contactInfoInput.value.trim() !== '') {
+
+const lines = contactInfoInput.value.split('\n');
+
+let contactHTML = '';
+
+lines.forEach(line => {
+
+if (line.trim() !== '') {
+
+// Determine appropriate icon
+
+let icon = 'fa-user';
+
+const lowerLine = line.toLowerCase();
+
+if (lowerLine.includes('phone') || lowerLine.includes('tel') || lowerLine.includes('mobile') || (/\d{10}/.test(lowerLine))) {
+
+icon = 'fa-phone';
+
+} else if (lowerLine.includes('email') || lowerLine.includes('@')) {
+
+icon = 'fa-envelope';
+
+} else if (lowerLine.includes('website') || lowerLine.includes('http') || lowerLine.includes('www')) {
+
+icon = 'fa-globe';
+
+} else if (lowerLine.includes('address')) {
+
+icon = 'fa-map-marker-alt';
+
+}
+
+contactHTML += `
+
+<div class="contact-item">
+
+<div class="contact-icon">
+
+<i class="fas ${icon}"></i>
+
+</div>
+
+<span>${line}</span>
+
+</div>
+
+`;
+
+}
+
+});
+
+contactDetails.innerHTML = contactHTML || `
+
+<div class="contact-item">
+
+<div class="contact-icon">
+
+<i class="fas fa-user"></i>
+
+</div>
+
+<span>Contact us for more information</span>
+
+</div>
+
+`;
+
+}
+
+// Show ad and action buttons
+
+adContainer.style.display = 'block';
+
+adActions.style.display = 'flex';
+
+// Scroll to ad if on mobile
+
+if (window.innerWidth < 1024) {
+
+adContainer.scrollIntoView({ behavior: 'smooth' });
+
+}
+
+});
+
+// Reset button click handler
+
+resetFormBtn.addEventListener('click', () => {
+
+// Reset all form inputs
+
+const inputs = [
+
+logoUrlInput,
+
+propertyImageInput,
+
+propertyTitleInput,
+
+propertyPriceInput,
+
+propertySubtitleInput,
+
+feature1Input,
+
+feature2Input,
+
+feature3Input,
+
+feature4Input,
+
+propertyDescriptionInput,
+
+contactInfoInput
+
+];
+
+inputs.forEach(input => {
+
+input.value = '';
+
+});
+
+// Reset ad preview to defaults
+
+adCompanyLogo.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Luxury_Real_Estate_logo.svg/1200px-Luxury_Real_Estate_logo.svg.png';
+
+adPropertyImage.src = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80';
+
+adTitle.textContent = 'Modern Luxury Villa';
+
+adPriceTag.textContent = '$1,250,000';
+
+adLocation.textContent = 'Beachfront, Malibu';
+
+adDescription.textContent = 'This exquisite beachfront property offers panoramic ocean views from every room. The spacious 3,200 sq ft residence features floor-to-ceiling windows, a gourmet kitchen, and designer finishes throughout. Enjoy direct beach access and stunning sunsets from the expansive terrace.';
+
+feature1Text.textContent = '4 Bedrooms';
+
+feature2Text.textContent = '3 Bathrooms';
+
+feature3Text.textContent = '3,200 sq ft';
+
+feature4Text.textContent = 'Infinity Pool';
+
+contactDetails.innerHTML = `
+
+<div class="contact-item">
+
+<div class="contact-icon">
+
+<i class="fas fa-user"></i>
+
+</div>
+
+<span>Agent: John Smith</span>
+
+</div>
+
+<div class="contact-item">
+
+<div class="contact-icon">
+
+<i class="fas fa-phone"></i>
+
+</div>
+
+<span>Phone: (555) 123-4567</span>
+
+</div>
+
+`;
+
+// Hide ad and actions
+
+adContainer.style.display = 'none';
+
+adActions.style.display = 'none';
+
+});
+
+// Download button click handler
+
+downloadAdBtn.addEventListener('click', () => {
+
+const loadingOverlay = createLoadingOverlay('Generating your high-quality ad image...');
+
+document.body.appendChild(loadingOverlay);
+
+html2canvas(adContainer, {
+
+scale: 2,
+
+logging: false,
+
+useCORS: true,
+
+backgroundColor: '#ffffff',
+
+scrollX: 0,
+
+scrollY: 0,
+
+windowWidth: adContainer.scrollWidth,
+
+windowHeight: adContainer.scrollHeight
+
+}).then(canvas => {
+
+// Create download link
+
+const link = document.createElement('a');
+
+link.download = 'property-ad.png';
+
+link.href = canvas.toDataURL('image/png');
+
+link.click();
+
+// Remove loading overlay
+
+document.body.removeChild(loadingOverlay);
+
+showNotification('Ad downloaded successfully!');
+
+}).catch(error => {
+
+console.error('Error generating image:', error);
+
+document.body.removeChild(loadingOverlay);
+
+showNotification('Error generating image. Please try again.', true);
+
+});
+
+});
+
+// Share button click handler
+
+shareAdBtn.addEventListener('click', async () => {
+
+if (navigator.share) {
+
+const loadingOverlay = createLoadingOverlay('Preparing ad for sharing...');
+
+document.body.appendChild(loadingOverlay);
+
+try {
+
+const canvas = await html2canvas(adContainer, {
+
+scale: 2,
+
+logging: false,
+
+useCORS: true,
+
+backgroundColor: '#ffffff'
+
+});
+
+canvas.toBlob(async (blob) => {
+
+try {
+
+const file = new File([blob], 'property-ad.png', { type: 'image/png' });
+
+await navigator.share({
+
+title: adTitle.textContent,
+
+text: `${adTitle.textContent} - ${adPriceTag.textContent}\n${adLocation.textContent}`,
+
+files: [file]
+
+});
+
+} catch (err) {
+
+console.error('Error sharing:', err);
+
+showShareFallback();
+
+} finally {
+
+document.body.removeChild(loadingOverlay);
+
+}
+
+}, 'image/png');
+
+} catch (err) {
+
+console.error('Error generating image for sharing:', err);
+
+showShareFallback();
+
+document.body.removeChild(loadingOverlay);
+
+}
+
+} else {
+
+showShareFallback();
+
+}
+
+});
+
+// Helper function to create loading overlay
+
+function createLoadingOverlay(message) {
+
+const overlay = document.createElement('div');
+
+overlay.className = 'loading-overlay';
+
+overlay.innerHTML = `
+
+<div style="text-align: center;">
+
+<i class="fas fa-spinner spinner fa-3x" style="margin-bottom: 20px;"></i>
+
+<p>${message}</p>
+
+</div>
+
+`;
+
+return overlay;
+
+}
+
+// Helper function to show notification
+
+function showNotification(message, isError = false) {
+
+notification.innerHTML = `
+
+<i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i>
+
+<span>${message}</span>
+
+`;
+
+notification.classList.add('show');
+
+setTimeout(() => {
+
+notification.classList.remove('show');
+
+}, 3000);
+
+}
+
+// Fallback for browsers that don't support Web Share API
+
+function showShareFallback() {
+
+const shareData = {
+
+title: `For Sale: ${adTitle.textContent}`,
+
+text: `${adTitle.textContent} - ${adPriceTag.textContent}\n\n${adDescription.textContent}\n\n${getContactInfo()}`,
+
+url: window.location.href
+
+};
+
+const shareTextarea = document.createElement('textarea');
+
+shareTextarea.value = `${shareData.title}\n\n${shareData.text}`;
+
+document.body.appendChild(shareTextarea);
+
+shareTextarea.select();
+
+document.execCommand('copy');
+
+document.body.removeChild(shareTextarea);
+
+showNotification('Share text copied to clipboard!');
+
+}
+
+// Helper function to get contact info as text
+
+function getContactInfo() {
+
+const contactItems = Array.from(contactDetails.querySelectorAll('.contact-item span'));
+
+return contactItems.map(item => item.textContent).join('\n');
+
+}
+
+</script>
+
+</body>
+
+</html>
