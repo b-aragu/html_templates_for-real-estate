@@ -1,0 +1,2420 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Premium Property Ad Creator</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+  
+
+:root {
+
+--primary-color: #3a86ff;
+
+--secondary-color: #8338ec;
+
+--accent-color: #ff006e;
+
+--dark-color: #1a1a2e;
+
+--light-color: #f8f9fa;
+
+}
+
+body {
+
+font-family: 'Poppins', sans-serif;
+
+background-color: #f5f7fa;
+
+padding: 20px;
+
+min-height: 100vh;
+
+}
+
+.main-container {
+
+max-width: 1200px;
+
+margin: 0 auto;
+
+display: grid;
+
+grid-template-columns: 1fr;
+
+gap: 30px;
+
+}
+
+.form-container {
+
+background: white;
+
+border-radius: 16px;
+
+padding: 30px;
+
+box-shadow: 0 4px 30px rgba(0,0,0,0.05);
+
+}
+
+.ad-preview-container {
+
+background: white;
+
+border-radius: 16px;
+
+padding: 30px;
+
+box-shadow: 0 4px 30px rgba(0,0,0,0.05);
+
+display: flex;
+
+flex-direction: column;
+
+min-height: 100%;
+
+}
+
+.form-title {
+
+color: var(--primary-color);
+
+font-size: 24px;
+
+font-weight: 700;
+
+margin-bottom: 20px;
+
+display: flex;
+
+align-items: center;
+
+gap: 10px;
+
+}
+
+.form-grid {
+
+display: grid;
+
+grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+
+gap: 20px;
+
+}
+
+.form-group {
+
+margin-bottom: 15px;
+
+}
+
+.theme-selector {
+
+display: grid;
+
+grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+
+gap: 12px;
+
+margin-bottom: 20px;
+
+}
+
+.theme-option {
+
+height: 60px;
+
+border-radius: 8px;
+
+cursor: pointer;
+
+overflow: hidden;
+
+position: relative;
+
+box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+
+transition: all 0.3s;
+
+}
+
+.theme-option:hover {
+
+transform: translateY(-3px);
+
+box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+
+}
+
+.theme-option.selected {
+
+box-shadow: 0 0 0 3px var(--primary-color);
+
+}
+
+.theme-colors {
+
+position: absolute;
+
+top: 0;
+
+left: 0;
+
+width: 100%;
+
+height: 100%;
+
+}
+
+.theme-name {
+
+position: absolute;
+
+bottom: 5px;
+
+left: 0;
+
+width: 100%;
+
+text-align: center;
+
+color: white;
+
+font-size: 10px;
+
+font-weight: 600;
+
+text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+
+}
+
+.form-label {
+
+display: block;
+
+margin-bottom: 8px;
+
+font-weight: 600;
+
+color: var(--dark-color);
+
+font-size: 14px;
+
+display: flex;
+
+align-items: center;
+
+gap: 8px;
+
+}
+
+.form-input, .form-textarea, .theme-select {
+
+width: 100%;
+
+padding: 12px 15px;
+
+border: 2px solid #e2e8f0;
+
+border-radius: 8px;
+
+font-size: 14px;
+
+transition: all 0.3s;
+
+background: white;
+
+}
+
+.form-input:focus, .form-textarea:focus, .theme-select:focus {
+
+outline: none;
+
+border-color: var(--primary-color);
+
+box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.2);
+
+}
+
+.form-textarea {
+
+min-height: 120px;
+
+resize: vertical;
+
+}
+
+/* Size control styling */
+
+.size-control {
+
+display: flex;
+
+align-items: center;
+
+gap: 8px;
+
+}
+
+.size-slider {
+
+flex-grow: 1;
+
+-webkit-appearance: none;
+
+height: 6px;
+
+background: #e2e8f0;
+
+border-radius: 3px;
+
+outline: none;
+
+}
+
+.size-slider::-webkit-slider-thumb {
+
+-webkit-appearance: none;
+
+appearance: none;
+
+width: 16px;
+
+height: 16px;
+
+border-radius: 50%;
+
+background: var(--primary-color);
+
+cursor: pointer;
+
+}
+
+.size-slider::-moz-range-thumb {
+
+width: 16px;
+
+height: 16px;
+
+border-radius: 50%;
+
+background: var(--primary-color);
+
+cursor: pointer;
+
+}
+
+.size-value {
+
+min-width: 30px;
+
+text-align: center;
+
+font-size: 12px;
+
+color: var(--dark-color);
+
+}
+
+.btn {
+
+padding: 12px 20px;
+
+border-radius: 8px;
+
+font-weight: 600;
+
+font-size: 14px;
+
+cursor: pointer;
+
+transition: all 0.3s;
+
+display: inline-flex;
+
+align-items: center;
+
+justify-content: center;
+
+gap: 8px;
+
+}
+
+.btn-primary {
+
+background-color: var(--primary-color);
+
+color: white;
+
+border: none;
+
+}
+
+.btn-primary:hover {
+
+background-color: #2a75e6;
+
+transform: translateY(-2px);
+
+box-shadow: 0 4px 12px rgba(58, 134, 255, 0.3);
+
+}
+
+.btn-secondary {
+
+background-color: white;
+
+color: var(--primary-color);
+
+border: 2px solid var(--primary-color);
+
+}
+
+.btn-secondary:hover {
+
+background-color: #f5f9ff;
+
+transform: translateY(-2px);
+
+}
+
+.btn-group {
+
+display: flex;
+
+gap: 15px;
+
+margin-top: 20px;
+
+flex-wrap: wrap;
+
+}
+
+/* Enhanced Ad Preview Styles with Everything on Gradient */
+
+.ad-preview {
+
+width: 100%;
+
+border-radius: 16px;
+
+overflow: hidden;
+
+box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+
+background: white;
+
+flex-grow: 1;
+
+display: none;
+
+position: relative;
+
+}
+
+.ad-image-container {
+
+position: relative;
+
+width: 100%;
+
+height: 500px;
+
+overflow: hidden;
+
+}
+
+.ad-image-bg {
+
+width: 100%;
+
+height: 100%;
+
+object-fit: cover;
+
+transition: transform 0.5s ease;
+
+}
+
+.ad-preview:hover .ad-image-bg {
+
+transform: scale(1.05);
+
+}
+
+.ad-overlay {
+
+position: absolute;
+
+top: 0;
+
+left: 0;
+
+width: 100%;
+
+height: 100%;
+
+background: linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.8) 100%);
+
+z-index: 2;
+
+display: flex;
+
+flex-direction: column;
+
+justify-content: space-between;
+
+align-items: flex-start;
+
+}
+
+.ad-top-content {
+
+width: 100%;
+
+display: flex;
+
+justify-content: space-between;
+
+align-items: flex-start;
+
+padding: 20px;
+
+z-index: 5;
+
+}
+
+.ad-badge-container {
+
+max-width: 30%;
+
+max-height: 50px;
+
+overflow: hidden;
+
+background: rgba(255,255,255,0.9);
+
+border-radius: 8px;
+
+padding: 5px;
+
+box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+
+backdrop-filter: blur(5px);
+
+}
+
+.ad-badge {
+
+display: flex;
+
+align-items: center;
+
+gap: 10px;
+
+}
+
+.badge-logo {
+
+height: 30px;
+
+max-height: 30px;
+
+width: auto;
+
+object-fit: contain;
+
+border-radius: 4px;
+
+transition: all 0.3s;
+
+cursor: grab;
+
+}
+
+.badge-logo:active {
+
+cursor: grabbing;
+
+}
+
+.badge-logo:hover {
+
+transform: scale(1.05);
+
+}
+
+.ad-meta {
+
+max-width: 35%;
+
+max-height: 70px;
+
+overflow: hidden;
+
+background: rgba(255,255,255,0.9);
+
+border-radius: 8px;
+
+padding: 10px 15px;
+
+box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+
+backdrop-filter: blur(5px);
+
+}
+
+.ad-price {
+
+font-weight: 800;
+
+color: var(--dark-color);
+
+text-align: right;
+
+white-space: nowrap;
+
+overflow: hidden;
+
+text-overflow: ellipsis;
+
+transition: all 0.3s;
+
+cursor: grab;
+
+}
+
+.ad-price:active {
+
+cursor: grabbing;
+
+}
+
+.ad-price:hover {
+
+color: var(--accent-color);
+
+transform: scale(1.02);
+
+}
+
+.ad-main-content {
+
+position: relative;
+
+padding: 0 30px 30px;
+
+z-index: 5;
+
+width: 100%;
+
+min-height: 300px;
+
+display: flex;
+
+flex-direction: column;
+
+justify-content: flex-end;
+
+}
+
+.ad-title {
+
+font-weight: 800;
+
+margin-bottom: 15px;
+
+line-height: 1.1;
+
+text-shadow: 0 3px 10px rgba(0,0,0,0.5);
+
+letter-spacing: -0.5px;
+
+color: white;
+
+transition: all 0.3s;
+
+cursor: grab;
+
+}
+
+.ad-title:active {
+
+cursor: grabbing;
+
+}
+
+.ad-title:hover {
+
+text-shadow: 0 5px 15px rgba(0,0,0,0.7);
+
+}
+
+.ad-subtitle {
+
+font-weight: 600;
+
+margin-bottom: 20px;
+
+opacity: 0.95;
+
+text-shadow: 0 2px 5px rgba(0,0,0,0.4);
+
+color: white;
+
+max-width: 80%;
+
+line-height: 1.3;
+
+cursor: grab;
+
+}
+
+.ad-subtitle:active {
+
+cursor: grabbing;
+
+}
+
+.ad-content {
+
+width: 100%;
+
+color: white;
+
+backdrop-filter: blur(8px);
+
+background: rgba(0,0,0,0.5);
+
+border-top: 1px solid rgba(255,255,255,0.15);
+
+max-height: 300px;
+
+overflow-y: auto;
+
+scrollbar-width: thin;
+
+scrollbar-color: rgba(255,255,255,0.4) rgba(0,0,0,0.3);
+
+border-radius: 8px;
+
+transition: all 0.3s;
+
+}
+
+.ad-content:hover {
+
+background: rgba(0,0,0,0.6);
+
+}
+
+.ad-content::-webkit-scrollbar {
+
+width: 8px;
+
+}
+
+.ad-content::-webkit-scrollbar-track {
+
+background: rgba(0,0,0,0.2);
+
+border-radius: 10px;
+
+}
+
+.ad-content::-webkit-scrollbar-thumb {
+
+background-color: rgba(255,255,255,0.4);
+
+border-radius: 10px;
+
+border: 1px solid rgba(0,0,0,0.2);
+
+}
+
+.ad-features {
+
+display: flex;
+
+gap: 15px;
+
+margin-bottom: 20px;
+
+flex-wrap: wrap;
+
+padding: 15px;
+
+z-index: 5;
+
+}
+
+.feature-item {
+
+display: flex;
+
+align-items: center;
+
+gap: 8px;
+
+background: rgba(255,255,255,0.2);
+
+backdrop-filter: blur(5px);
+
+padding: 10px 18px;
+
+border-radius: 30px;
+
+border: 1px solid rgba(255,255,255,0.15);
+
+transition: all 0.3s;
+
+}
+
+.feature-item:hover {
+
+background: rgba(255,255,255,0.3);
+
+transform: translateY(-2px);
+
+}
+
+.feature-icon {
+
+font-size: 15px;
+
+color: white;
+
+}
+
+.ad-contact {
+
+display: flex;
+
+gap: 15px;
+
+align-items: center;
+
+flex-wrap: wrap;
+
+padding: 0 15px 15px;
+
+}
+
+.contact-item {
+
+display: flex;
+
+align-items: center;
+
+gap: 8px;
+
+background: rgba(255,255,255,0.2);
+
+backdrop-filter: blur(5px);
+
+padding: 10px 18px;
+
+border-radius: 30px;
+
+border: 1px solid rgba(255,255,255,0.15;
+
+transition: all 0.3s;
+
+}
+
+.contact-item:hover {
+
+background: rgba(255,255,255,0.3);
+
+transform: translateY(-2px);
+
+}
+
+.contact-icon {
+
+font-size: 15px;
+
+color: white;
+
+}
+
+.ad-description {
+
+padding: 15px;
+
+margin-bottom: 15px;
+
+line-height: 1.6;
+
+}
+
+/* Theme classes */
+
+.theme-classic {
+
+--primary-color: #3a86ff;
+
+--secondary-color: #8338ec;
+
+--accent-color: #ff006e;
+
+}
+
+.theme-modern {
+
+--primary-color: #2563eb;
+
+--secondary-color: #4338ca;
+
+--accent-color: #10b981;
+
+}
+
+.theme-luxury {
+
+--primary-color: #7c3aed;
+
+--secondary-color: #6d28d9;
+
+--accent-color: #f59e0b;
+
+}
+
+.theme-minimal {
+
+--primary-color: #1e40af;
+
+--secondary-color: #1e3a8a;
+
+--accent-color: #4b5563;
+
+}
+
+.theme-nature {
+
+--primary-color: #065f46;
+
+--secondary-color: #047857;
+
+--accent-color: #d97706;
+
+}
+
+.theme-dark {
+
+--primary-color: #9333ea;
+
+--secondary-color: #6b21a8;
+
+--accent-color: #1e40af;
+
+}
+
+.theme-default {
+
+--primary-color: #3a86ff;
+
+--secondary-color: #8338ec;
+
+--accent-color: #ff006e;
+
+}
+
+/* Size control panels */
+
+.size-control-panel {
+
+position: absolute;
+
+bottom: 10px;
+
+left: 10px;
+
+z-index: 100;
+
+background: rgba(0,0,0,0.7);
+
+padding: 10px;
+
+border-radius: 8px;
+
+display: none;
+
+}
+
+.size-control-group {
+
+margin-bottom: 8px;
+
+}
+
+.size-label {
+
+display: block;
+
+color: white;
+
+font-size: 11px;
+
+margin-bottom: 3px;
+
+}
+
+/* Notification */
+
+.notification {
+
+position: fixed;
+
+top: 20px;
+
+right: 20px;
+
+background: rgba(0,0,0,0.8);
+
+color: white;
+
+padding: 12px 20px;
+
+border-radius: 8px;
+
+display: flex;
+
+align-items: center;
+
+gap: 10px;
+
+z-index: 1000;
+
+transform: translateY(-100px);
+
+opacity: 0;
+
+transition: all 0.3s;
+
+}
+
+.notification.show {
+
+transform: translateY(0);
+
+opacity: 1;
+
+}
+
+@media (min-width: 1024px) {
+
+.main-container {
+
+grid-template-columns: 1fr 1fr;
+
+}
+
+.ad-title {
+
+font-size: 52px;
+
+}
+
+.ad-subtitle {
+
+font-size: 24px;
+
+}
+
+}
+
+@media (max-width: 640px) {
+
+.ad-image-container {
+
+height: 450px;
+
+}
+
+.ad-main-content {
+
+padding: 0 15px 20px;
+
+}
+
+.ad-title {
+
+font-size: 32px;
+
+}
+
+.ad-subtitle {
+
+font-size: 18px;
+
+max-width: 100%;
+
+}
+
+.ad-badge-container, .ad-meta {
+
+max-width: 40%;
+
+}
+
+.ad-price {
+
+font-size: 22px;
+
+}
+
+.ad-content {
+
+max-height: 200px;
+
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="main-container">
+
+<div class="form-container">
+
+<h2 class="form-title">
+
+<i class="fas fa-pen-alt"></i>
+
+Create Your Property Ad
+
+</h2>
+
+<div class="form-group">
+
+<label class="form-label">
+
+<i class="fas fa-palette"></i>
+
+Select Theme
+
+</label>
+
+<div class="theme-selector">
+
+<div class="theme-option selected" data-theme="theme-default">
+
+<div class="theme-colors" style="background: linear-gradient(135deg, #3a86ff, #8338ec, #ff006e);"></div>
+
+<span class="theme-name">Default</span>
+
+</div>
+
+<div class="theme-option" data-theme="theme-classic">
+
+<div class="theme-colors" style="background: linear-gradient(135deg, #3a86ff, #8338ec, #ff006e);"></div>
+
+<span class="theme-name">Classic</span>
+
+</div>
+
+<div class="theme-option" data-theme="theme-modern">
+
+<div class="theme-colors" style="background: linear-gradient(135deg, #2563eb, #4338ca, #10b981);"></div>
+
+<span class="theme-name">Modern</span>
+
+</div>
+
+<div class="theme-option" data-theme="theme-luxury">
+
+<div class="theme-colors" style="background: linear-gradient(135deg, #7c3aed, #6d28d9, #f59e0b);"></div>
+
+<span class="theme-name">Premium</span>
+
+</div>
+
+<div class="theme-option" data-theme="theme-minimal">
+
+<div class="theme-colors" style="background: linear-gradient(135deg, #1e40af, #1e3a8a, #4b5563);"></div>
+
+<span class="theme-name">Minimal</span>
+
+</div>
+
+<div class="theme-option" data-theme="theme-nature">
+
+<div class="theme-colors" style="background: linear-gradient(135deg, #065f46, #047857, #d97706);"></div>
+
+<span class="theme-name">Nature</span>
+
+</div>
+
+<div class="theme-option" data-theme="theme-dark">
+
+<div class="theme-colors" style="background: linear-gradient(135deg, #9333ea, #6b21a8, #1e40af);"></div>
+
+<span class="theme-name">Dark</span>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="form-grid">
+
+<div class="form-group">
+
+<label for="logoUrl" class="form-label">
+
+<i class="fas fa-image"></i>
+
+Company Logo URL
+
+</label>
+
+<input type="text" id="logoUrl" class="form-input" placeholder="https://example.com/logo.png">
+
+<div class="size-control">
+
+<span class="size-label">Logo Size:</span>
+
+<input type="range" id="logoSize" class="size-slider" min="20" max="60" value="30">
+
+<span id="logoSizeValue" class="size-value">30px</span>
+
+</div>
+
+</div>
+
+<div class="form-group">
+
+<label for="propertyImage" class="form-label">
+
+<i class="fas fa-camera"></i>
+
+Property Image URL
+
+</label>
+
+<input type="text" id="propertyImage" class="form-input" placeholder="https://example.com/property.jpg">
+
+</div>
+
+<div class="form-group">
+
+<label for="propertyTitle" class="form-label">
+
+<i class="fas fa-heading"></i>
+
+Property Title
+
+</label>
+
+<input type="text" id="propertyTitle" class="form-input" placeholder="Modern Villa">
+
+<div class="size-control">
+
+<span class="size-label">Title Size:</span>
+
+<input type="range" id="titleSize" class="size-slider" min="24" max="72" value="42">
+
+<span id="titleSizeValue" class="size-value">42px</span>
+
+</div>
+
+</div>
+
+<div class="form-group">
+
+<label for="propertyPrice" class="form-label">
+
+<i class="fas fa-tag"></i>
+
+Price
+
+</label>
+
+<input type="text" id="propertyPrice" class="form-input" placeholder="$1,250,000">
+
+<div class="size-control">
+
+<span class="size-label">Price Size:</span>
+
+<input type="range" id="priceSize" class="size-slider" min="16" max="48" value="26">
+
+<span id="priceSizeValue" class="size-value">26px</span>
+
+</div>
+
+</div>
+
+<div class="form-group">
+
+<label for="propertySubtitle" class="form-label">
+
+<i class="fas fa-map-marker-alt"></i>
+
+Location & Type
+
+</label>
+
+<input type="text" id="propertySubtitle" class="form-input" placeholder="Beachfront, Malibu | Villa">
+
+<div class="size-control">
+
+<span class="size-label">Subtitle Size:</span>
+
+<input type="range" id="subtitleSize" class="size-slider" min="14" max="36" value="22">
+
+<span id="subtitleSizeValue" class="size-value">22px</span>
+
+</div>
+
+</div>
+
+<div class="form-group">
+
+<label for="feature1" class="form-label">
+
+<i class="fas fa-bed"></i>
+
+Feature 1
+
+</label>
+
+<input type="text" id="feature1" class="form-input" placeholder="4 Bedrooms">
+
+</div>
+
+<div class="form-group">
+
+<label for="feature2" class="form-label">
+
+<i class="fas fa-bath"></i>
+
+Feature 2
+
+</label>
+
+<input type="text" id="feature2" class="form-input" placeholder="3 Bathrooms">
+
+</div>
+
+<div class="form-group">
+
+<label for="feature3" class="form-label">
+
+<i class="fas fa-ruler-combined"></i>
+
+Feature 3
+
+</label>
+
+<input type="text" id="feature3" class="form-input" placeholder="3,200 sq ft">
+
+</div>
+
+<div class="form-group">
+
+<label for="feature4" class="form-label">
+
+<i class="fas fa-swimming-pool"></i>
+
+Feature 4
+
+</label>
+
+<input type="text" id="feature4" class="form-input" placeholder="Infinity Pool">
+
+</div>
+
+<div class="form-group">
+
+<label for="feature5" class="form-label">
+
+<i class="fas fa-car"></i>
+
+Feature 5
+
+</label>
+
+<input type="text" id="feature5" class="form-input" placeholder="2 Car Garage">
+
+</div>
+
+<div class="form-group">
+
+<label for="feature6" class="form-label">
+
+<i class="fas fa-home"></i>
+
+Feature 6
+
+</label>
+
+<input type="text" id="feature6" class="form-input" placeholder="Ocean View">
+
+</div>
+
+<div class="form-group">
+
+<label for="propertyDescription" class="form-label">
+
+<i class="fas fa-align-left"></i>
+
+Description
+
+</label>
+
+<textarea id="propertyDescription" class="form-textarea" placeholder="Describe the property in detail..."></textarea>
+
+<div class="size-control">
+
+<span class="size-label">Text Size:</span>
+
+<input type="range" id="textSize" class="size-slider" min="12" max="18" value="14">
+
+<span id="textSizeValue" class="size-value">14px</span>
+
+</div>
+
+</div>
+
+<div class="form-group">
+
+<label for="contactInfo" class="form-label">
+
+<i class="fas fa-address-card"></i>
+
+Contact Information (one per line)
+
+</label>
+
+<textarea id="contactInfo" class="form-textarea" placeholder="Agent: John Smith\nPhone: (555) 123-4567\nEmail: john@example.com\nwww.example.com"></textarea>
+
+</div>
+
+</div>
+
+<div class="btn-group">
+
+<button id="generateAdBtn" class="btn btn-primary">
+
+<i class="fas fa-magic"></i>
+
+Generate Ad
+
+</button>
+
+<button id="resetFormBtn" class="btn btn-secondary">
+
+<i class="fas fa-redo"></i>
+
+Reset Form
+
+</button>
+
+</div>
+
+</div>
+
+<div class="ad-preview-container">
+
+<h2 class="form-title">
+
+<i class="fas fa-eye"></i>
+
+Ad Preview
+
+</h2>
+
+<div id="adContainer" class="ad-preview theme-default">
+
+<div class="ad-image-container">
+
+<img id="adPropertyImage" class="ad-image-bg" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80" alt="Property">
+
+<div class="ad-overlay">
+
+<div class="ad-top-content">
+
+<div class="ad-badge-container">
+
+<div class="ad-badge">
+
+<img id="adCompanyLogo" class="badge-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Eo_circle_blue_letter-a.svg/2048px-Eo_circle_blue_letter-a.svg.png" alt="Logo">
+
+</div>
+
+</div>
+
+<div class="ad-meta">
+
+<div id="adPriceTag" class="ad-price" style="font-size: 26px;">$1,250,000</div>
+
+</div>
+
+</div>
+
+<div class="ad-main-content">
+
+<h1 id="adTitle" class="ad-title" style="font-size: 42px;">Modern Villa</h1>
+
+<p id="adLocation" class="ad-subtitle" style="font-size: 22px;">Beachfront, Malibu | Ocean Views</p>
+
+<div class="ad-content">
+
+<div id="adDescription" class="ad-description" style="font-size: 14px;">
+
+Beautiful spacious villa with stunning ocean views and modern amenities. Perfect for family living or vacation home with luxurious features including an infinity pool and private beach access.
+
+</div>
+
+<div class="ad-features">
+
+<div class="feature-item">
+
+<i class="fas fa-bed feature-icon"></i>
+
+<span id="feature1Text">4 Bedrooms</span>
+
+</div>
+
+<div class="feature-item">
+
+<i class="fas fa-bath feature-icon"></i>
+
+<span id="feature2Text">3 Bathrooms</span>
+
+</div>
+
+<div class="feature-item">
+
+<i class="fas fa-ruler-combined feature-icon"></i>
+
+<span id="feature3Text">3,200 sq ft</span>
+
+</div>
+
+<div class="feature-item">
+
+<i class="fas fa-swimming-pool feature-icon"></i>
+
+<span id="feature4Text">Infinity Pool</span>
+
+</div>
+
+<div class="feature-item">
+
+<i class="fas fa-car feature-icon"></i>
+
+<span id="feature5Text">2 Car Garage</span>
+
+</div>
+
+<div class="feature-item">
+
+<i class="fas fa-home feature-icon"></i>
+
+<span id="feature6Text">Ocean View</span>
+
+</div>
+
+</div>
+
+<div class="ad-contact">
+
+<div id="contactDetails">
+
+<div class="contact-item">
+
+<i class="fas fa-user contact-icon"></i>
+
+<span>Agent: John Smith</span>
+
+</div>
+
+<div class="contact-item">
+
+<i class="fas fa-phone contact-icon"></i>
+
+<span>Phone: (555) 123-4567</span>
+
+</div>
+
+<div class="contact-item">
+
+<i class="fas fa-envelope contact-icon"></i>
+
+<span>Email: john@example.com</span>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div id="adActions" class="btn-group" style="margin-top: 20px; display: none;">
+
+<button id="downloadAdBtn" class="btn btn-primary">
+
+<i class="fas fa-download"></i>
+
+Download Ad
+
+</button>
+
+<button id="shareAdBtn" class="btn btn-secondary">
+
+<i class="fas fa-share-alt"></i>
+
+Share Ad
+
+</button>
+
+<button id="copyHtmlBtn" class="btn btn-secondary">
+
+<i class="fas fa-code"></i>
+
+Copy HTML
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<div id="notification" class="notification">
+
+<i class="fas fa-check-circle"></i>
+
+<span>Copied to clipboard!</span>
+
+</div>
+
+  
+
+<script>
+
+// DOM Elements
+
+const logoUrlInput = document.getElementById('logoUrl');
+
+const propertyImageInput = document.getElementById('propertyImage');
+
+const propertyTitleInput = document.getElementById('propertyTitle');
+
+const propertyPriceInput = document.getElementById('propertyPrice');
+
+const propertySubtitleInput = document.getElementById('propertySubtitle');
+
+const feature1Input = document.getElementById('feature1');
+
+const feature2Input = document.getElementById('feature2');
+
+const feature3Input = document.getElementById('feature3');
+
+const feature4Input = document.getElementById('feature4');
+
+const feature5Input = document.getElementById('feature5');
+
+const feature6Input = document.getElementById('feature6');
+
+const propertyDescriptionInput = document.getElementById('propertyDescription');
+
+const contactInfoInput = document.getElementById('contactInfo');
+
+// Size controls
+
+const logoSizeSlider = document.getElementById('logoSize');
+
+const logoSizeValue = document.getElementById('logoSizeValue');
+
+const titleSizeSlider = document.getElementById('titleSize');
+
+const titleSizeValue = document.getElementById('titleSizeValue');
+
+const priceSizeSlider = document.getElementById('priceSize');
+
+const priceSizeValue = document.getElementById('priceSizeValue');
+
+const subtitleSizeSlider = document.getElementById('subtitleSize');
+
+const subtitleSizeValue = document.getElementById('subtitleSizeValue');
+
+const textSizeSlider = document.getElementById('textSize');
+
+const textSizeValue = document.getElementById('textSizeValue');
+
+// Size elements in preview
+
+const adCompanyLogo = document.getElementById('adCompanyLogo');
+
+const adTitle = document.getElementById('adTitle');
+
+const adPriceTag = document.getElementById('adPriceTag');
+
+const adLocation = document.getElementById('adLocation');
+
+const adDescription = document.getElementById('adDescription');
+
+// Buttons and other elements
+
+const generateAdBtn = document.getElementById('generateAdBtn');
+
+const resetFormBtn = document.getElementById('resetFormBtn');
+
+const downloadAdBtn = document.getElementById('downloadAdBtn');
+
+const shareAdBtn = document.getElementById('shareAdBtn');
+
+const copyHtmlBtn = document.getElementById('copyHtmlBtn');
+
+const themeOptions = document.querySelectorAll('.theme-option');
+
+const adContainer = document.getElementById('adContainer');
+
+const adActions = document.getElementById('adActions');
+
+const adPropertyImage = document.getElementById('adPropertyImage');
+
+const feature1Text = document.getElementById('feature1Text');
+
+const feature2Text = document.getElementById('feature2Text');
+
+const feature3Text = document.getElementById('feature3Text');
+
+const feature4Text = document.getElementById('feature4Text');
+
+const feature5Text = document.getElementById('feature5Text');
+
+const feature6Text = document.getElementById('feature6Text');
+
+const contactDetails = document.getElementById('contactDetails');
+
+const notification = document.getElementById('notification');
+
+// Initialize size controls
+
+function initializeSizeControls() {
+
+// Logo size
+
+logoSizeSlider.addEventListener('input', () => {
+
+const size = logoSizeSlider.value;
+
+adCompanyLogo.style.height = `${size}px`;
+
+logoSizeValue.textContent = `${size}px`;
+
+});
+
+// Title size
+
+titleSizeSlider.addEventListener('input', () => {
+
+const size = titleSizeSlider.value;
+
+adTitle.style.fontSize = `${size}px`;
+
+titleSizeValue.textContent = `${size}px`;
+
+});
+
+// Price size
+
+priceSizeSlider.addEventListener('input', () => {
+
+const size = priceSizeSlider.value;
+
+adPriceTag.style.fontSize = `${size}px`;
+
+priceSizeValue.textContent = `${size}px`;
+
+});
+
+// Subtitle size
+
+subtitleSizeSlider.addEventListener('input', () => {
+
+const size = subtitleSizeSlider.value;
+
+adLocation.style.fontSize = `${size}px`;
+
+subtitleSizeValue.textContent = `${size}px`;
+
+});
+
+// Text size
+
+textSizeSlider.addEventListener('input', () => {
+
+const size = textSizeSlider.value;
+
+adDescription.style.fontSize = `${size}px`;
+
+textSizeValue.textContent = `${size}px`;
+
+});
+
+}
+
+// Theme selection
+
+themeOptions.forEach(option => {
+
+option.addEventListener('click', () => {
+
+// Remove selected class from all options
+
+themeOptions.forEach(opt => opt.classList.remove('selected'));
+
+// Add selected class to clicked option
+
+option.classList.add('selected');
+
+// Change theme of ad preview
+
+const theme = option.dataset.theme;
+
+adContainer.className = theme ? `ad-preview ${theme}` : 'ad-preview';
+
+// Show ad if not already shown
+
+if (adContainer.style.display !== 'block') {
+
+adContainer.style.display = 'block';
+
+adActions.style.display = 'flex';
+
+}
+
+});
+
+});
+
+// Generate button click handler
+
+generateAdBtn.addEventListener('click', () => {
+
+// Update ad preview with form data
+
+if (propertyImageInput.value) {
+
+adPropertyImage.src = propertyImageInput.value;
+
+} else {
+
+adPropertyImage.src = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80';
+
+}
+
+if (logoUrlInput.value) {
+
+adCompanyLogo.src = logoUrlInput.value;
+
+adCompanyLogo.style.display = 'block';
+
+} else {
+
+adCompanyLogo.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Eo_circle_blue_letter-a.svg/2048px-Eo_circle_blue_letter-a.svg.png';
+
+adCompanyLogo.style.display = 'block';
+
+}
+
+adTitle.textContent = propertyTitleInput.value || 'Modern Villa';
+
+adPriceTag.textContent = propertyPriceInput.value || '$1,250,000';
+
+// Split location and type
+
+const locationType = (propertySubtitleInput.value || 'Prime Location').split('|');
+
+adLocation.textContent = locationType[0].trim() || 'Prime Location';
+
+// Update description
+
+adDescription.textContent = propertyDescriptionInput.value || 'Beautiful spacious property with modern amenities.';
+
+// Update features
+
+feature1Text.textContent = feature1Input.value || '4 Bedrooms';
+
+feature2Text.textContent = feature2Input.value || '3 Bathrooms';
+
+feature3Text.textContent = feature3Input.value || '3,200 sq ft';
+
+feature4Text.textContent = feature4Input.value || 'Infinity Pool';
+
+feature5Text.textContent = feature5Input.value || '2 Car Garage';
+
+feature6Text.textContent = feature6Input.value || 'Ocean View';
+
+// Hide empty features
+
+[feature1Text, feature2Text, feature3Text, feature4Text, feature5Text, feature6Text].forEach((el, index) => {
+
+const isEmpty = ![feature1Input, feature2Input, feature3Input, feature4Input, feature5Input, feature6Input][index].value;
+
+el.parentElement.style.display = isEmpty ? 'none' : 'flex';
+
+});
+
+// Update contact info
+
+if (contactInfoInput.value.trim() !== '') {
+
+const lines = contactInfoInput.value.split('\n');
+
+let contactHTML = '';
+
+lines.forEach(line => {
+
+if (line.trim() !== '') {
+
+// Determine appropriate icon
+
+let icon = 'fa-user';
+
+const lowerLine = line.toLowerCase();
+
+if (lowerLine.includes('phone') || lowerLine.includes('tel') || lowerLine.includes('mobile') || (/\d{10}/.test(lowerLine))) {
+
+icon = 'fa-phone';
+
+} else if (lowerLine.includes('email') || lowerLine.includes('@')) {
+
+icon = 'fa-envelope';
+
+} else if (lowerLine.includes('website') || lowerLine.includes('http') || lowerLine.includes('www')) {
+
+icon = 'fa-globe';
+
+} else if (lowerLine.includes('address')) {
+
+icon = 'fa-map-marker-alt';
+
+} else if (lowerLine.includes('whatsapp')) {
+
+icon = 'fa-whatsapp';
+
+} else if (lowerLine.includes('agent') || lowerLine.includes('broker') || lowerLine.includes('realtor')) {
+
+icon = 'fa-user-tie';
+
+}
+
+contactHTML += `
+
+<div class="contact-item">
+
+<i class="fas ${icon} contact-icon"></i>
+
+<span>${line}</span>
+
+</div>
+
+`;
+
+}
+
+});
+
+contactDetails.innerHTML = contactHTML || `
+
+<div class="contact-item">
+
+<i class="fas fa-phone contact-icon"></i>
+
+<span>Contact us for more information</span>
+
+</div>
+
+`;
+
+} else {
+
+contactDetails.innerHTML = `
+
+<div class="contact-item">
+
+<i class="fas fa-phone contact-icon"></i>
+
+<span>Contact us for more information</span>
+
+</div>
+
+<div class="contact-item">
+
+<i class="fas fa-envelope contact-icon"></i>
+
+<span>Email: example@example.com</span>
+
+</div>
+
+`;
+
+}
+
+// Apply size controls
+
+adCompanyLogo.style.height = `${logoSizeSlider.value}px`;
+
+adTitle.style.fontSize = `${titleSizeSlider.value}px`;
+
+adPriceTag.style.fontSize = `${priceSizeSlider.value}px`;
+
+adLocation.style.fontSize = `${subtitleSizeSlider.value}px`;
+
+adDescription.style.fontSize = `${textSizeSlider.value}px`;
+
+// Show ad and action buttons
+
+adContainer.style.display = 'block';
+
+adActions.style.display = 'flex';
+
+// Scroll to ad if on mobile
+
+if (window.innerWidth < 1024) {
+
+adContainer.scrollIntoView({ behavior: 'smooth' });
+
+}
+
+});
+
+// Reset button click handler
+
+resetFormBtn.addEventListener('click', () => {
+
+// Reset all form inputs
+
+const inputs = [
+
+logoUrlInput,
+
+propertyImageInput,
+
+propertyTitleInput,
+
+propertyPriceInput,
+
+propertySubtitleInput,
+
+feature1Input,
+
+feature2Input,
+
+feature3Input,
+
+feature4Input,
+
+feature5Input,
+
+feature6Input,
+
+propertyDescriptionInput,
+
+contactInfoInput
+
+];
+
+inputs.forEach(input => {
+
+input.value = '';
+
+});
+
+// Reset size controls
+
+logoSizeSlider.value = 30;
+
+logoSizeValue.textContent = '30px';
+
+titleSizeSlider.value = 42;
+
+titleSizeValue.textContent = '42px';
+
+priceSizeSlider.value = 26;
+
+priceSizeValue.textContent = '26px';
+
+subtitleSizeSlider.value = 22;
+
+subtitleSizeValue.textContent = '22px';
+
+textSizeSlider.value = 14;
+
+textSizeValue.textContent = '14px';
+
+// Reset selected theme
+
+themeOptions.forEach(opt => opt.classList.remove('selected'));
+
+document.querySelector('.theme-option[data-theme="theme-default"]').classList.add('selected');
+
+adContainer.className = 'ad-preview theme-default';
+
+// Reset ad preview to defaults
+
+adCompanyLogo.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Eo_circle_blue_letter-a.svg/2048px-Eo_circle_blue_letter-a.svg.png';
+
+adCompanyLogo.style.display = 'block';
+
+adCompanyLogo.style.height = '30px';
+
+adPropertyImage.src = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80';
+
+adTitle.textContent = 'Modern Villa';
+
+adTitle.style.fontSize = '42px';
+
+adPriceTag.textContent = '$1,250,000';
+
+adPriceTag.style.fontSize = '26px';
+
+adLocation.textContent = 'Beachfront, Malibu | Ocean Views';
+
+adLocation.style.fontSize = '22px';
+
+adDescription.textContent = 'Beautiful spacious villa with stunning ocean views and modern amenities. Perfect for family living or vacation home.';
+
+adDescription.style.fontSize = '14px';
+
+feature1Text.textContent = '4 Bedrooms';
+
+feature2Text.textContent = '3 Bathrooms';
+
+feature3Text.textContent = '3,200 sq ft';
+
+feature4Text.textContent = 'Infinity Pool';
+
+feature5Text.textContent = '2 Car Garage';
+
+feature6Text.textContent = 'Ocean View';
+
+// Show all features
+
+[feature1Text, feature2Text, feature3Text, feature4Text, feature5Text, feature6Text].forEach(el => {
+
+el.parentElement.style.display = 'flex';
+
+});
+
+contactDetails.innerHTML = `
+
+<div class="contact-item">
+
+<i class="fas fa-user contact-icon"></i>
+
+<span>Agent: John Smith</span>
+
+</div>
+
+<div class="contact-item">
+
+<i class="fas fa-phone contact-icon"></i>
+
+<span>Phone: (555) 123-4567</span>
+
+</div>
+
+<div class="contact-item">
+
+<i class="fas fa-envelope contact-icon"></i>
+
+<span>Email: john@example.com</span>
+
+</div>
+
+`;
+
+// Hide ad and actions
+
+adContainer.style.display = 'none';
+
+adActions.style.display = 'none';
+
+});
+
+// Download button click handler
+
+downloadAdBtn.addEventListener('click', () => {
+
+const loadingOverlay = createLoadingOverlay('Generating your high-quality ad image...');
+
+document.body.appendChild(loadingOverlay);
+
+html2canvas(adContainer, {
+
+scale: 2,
+
+logging: false,
+
+useCORS: true,
+
+backgroundColor: '#ffffff',
+
+scrollX: 0,
+
+scrollY: 0,
+
+windowWidth: adContainer.scrollWidth,
+
+windowHeight: adContainer.scrollHeight
+
+}).then(canvas => {
+
+// Create download link
+
+const link = document.createElement('a');
+
+link.download = 'property-ad.png';
+
+link.href = canvas.toDataURL('image/png');
+
+link.click();
+
+// Remove loading overlay
+
+document.body.removeChild(loadingOverlay);
+
+showNotification('Ad downloaded successfully!');
+
+}).catch(error => {
+
+console.error('Error generating image:', error);
+
+document.body.removeChild(loadingOverlay);
+
+showNotification('Error generating image. Please try again.', true);
+
+});
+
+});
+
+// Share button click handler
+
+shareAdBtn.addEventListener('click', async () => {
+
+if (navigator.share) {
+
+const loadingOverlay = createLoadingOverlay('Preparing ad for sharing...');
+
+document.body.appendChild(loadingOverlay);
+
+try {
+
+const canvas = await html2canvas(adContainer, {
+
+scale: 2,
+
+logging: false,
+
+useCORS: true,
+
+backgroundColor: '#ffffff'
+
+});
+
+canvas.toBlob(async (blob) => {
+
+try {
+
+const file = new File([blob], 'property-ad.png', { type: 'image/png' });
+
+await navigator.share({
+
+title: adTitle.textContent,
+
+text: `${adTitle.textContent} - ${adPriceTag.textContent}\n${adLocation.textContent}`,
+
+files: [file]
+
+});
+
+} catch (err) {
+
+console.error('Error sharing:', err);
+
+showShareFallback();
+
+} finally {
+
+document.body.removeChild(loadingOverlay);
+
+}
+
+}, 'image/png');
+
+} catch (err) {
+
+console.error('Error generating image for sharing:', err);
+
+showShareFallback();
+
+document.body.removeChild(loadingOverlay);
+
+}
+
+} else {
+
+showShareFallback();
+
+}
+
+});
+
+// Copy HTML button click handler
+
+copyHtmlBtn.addEventListener('click', () => {
+
+const htmlContent = adContainer.outerHTML;
+
+navigator.clipboard.writeText(htmlContent)
+
+.then(() => {
+
+showNotification('HTML code copied to clipboard!');
+
+})
+
+.catch(err => {
+
+console.error('Could not copy text: ', err);
+
+showNotification('Failed to copy HTML', true);
+
+});
+
+});
+
+// Initialize size controls when DOM is loaded
+
+document.addEventListener('DOMContentLoaded', initializeSizeControls);
+
+// Helper function to create loading overlay
+
+function createLoadingOverlay(message) {
+
+const overlay = document.createElement('div');
+
+overlay.className = 'fixed inset-0 bg-black/70 flex flex-col justify-center items-center text-white z-50 p2-0';
+
+overlay.innerHTML = `
+
+<div class="text-center">
+
+<i class="fas fa-spinner fa-spin text-5xl mb-4"></i>
+
+<p class="text-lg">${message}</p>
+
+</div>
+
+`;
+
+return overlay;
+
+}
+
+// Helper function to show notification
+
+function showNotification(message, isError = false) {
+
+notification.innerHTML = `
+
+<i class="fas ${isError ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i>
+
+<span>${message}</span>
+
+`;
+
+notification.classList.add('show');
+
+setTimeout(() => {
+
+notification.classList.remove('show');
+
+}, 3000);
+
+}
+
+// Fallback for browsers that don't support Web Share API
+
+function showShareFallback() {
+
+const shareData = {
+
+title: `For Sale: ${adTitle.textContent}`,
+
+text: `${adTitle.textContent} - ${adPriceTag.textContent}\n\n${adLocation.textContent}\n\n${getContactInfo()}`,
+
+url: window.location.href
+
+};
+
+const shareTextarea = document.createElement('textarea');
+
+shareTextarea.value = `${shareData.title}\n\n${shareData.text}`;
+
+document.body.appendChild(shareTextarea);
+
+shareTextarea.select();
+
+document.execCommand('copy');
+
+document.body.removeChild(shareTextarea);
+
+showNotification('Share text copied to clipboard!');
+
+}
+
+// Helper function to get contact info as text
+
+function getContactInfo() {
+
+const contactItems = Array.from(contactDetails.querySelectorAll('.contact-item span'));
+
+return contactItems.map(item => item.textContent).join('\n');
+
+}
+
+</script>
+
+</body>
+
+</html>
